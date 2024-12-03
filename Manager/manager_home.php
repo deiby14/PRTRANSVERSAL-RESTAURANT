@@ -3,26 +3,21 @@ include_once("../conexion.php");
 session_start();
 
 // Recojemos el valor de la sesión 'id_usuario' y lo guardamos en una variable
-$camareroActual = mysqli_real_escape_string($con, htmlspecialchars($_SESSION['id_usuario']));
+$camareroActual = $_SESSION['id_usuario'];
 
-$sqlComprobar = "SELECT tipo_usuario FROM usuarios WHERE id_usuario = ?";
-$stmtComprobar = mysqli_prepare($con, $sqlComprobar);
-mysqli_stmt_bind_param($stmtComprobar, "i", $camareroActual);
-mysqli_stmt_execute($stmtComprobar);
-mysqli_stmt_bind_result($stmtComprobar, $tipoUsuario);
-mysqli_stmt_fetch($stmtComprobar);
-mysqli_stmt_close($stmtComprobar);
+try {
+    // Preparar la consulta para verificar el tipo de usuario
+    $stmtComprobar = $pdo->prepare("SELECT tipo_usuario FROM usuarios WHERE id_usuario = :id_usuario");
+    $stmtComprobar->execute(['id_usuario' => $camareroActual]);
+    $tipoUsuario = $stmtComprobar->fetchColumn();
 
-
-if (!isset($_SESSION['nombre'])) {
-
-    header("Location: ../index.php");
-    exit();
-} elseif ($tipoUsuario != "manager") {
-
-    header('Location: ' . '../Camarero/camarero_home.php');
-    exit();
-} else {
+    if (!isset($_SESSION['nombre'])) {
+        header("Location: ../index.php");
+        exit();
+    } elseif ($tipoUsuario != "manager") {
+        header('Location: ' . '../Camarero/camarero_home.php');
+        exit();
+    } else {
 ?>
 
     <!DOCTYPE html>
@@ -173,5 +168,8 @@ if (!isset($_SESSION['nombre'])) {
 
     </html>
 <?php
+    }
+} catch (PDOException $e) {
+    echo 'Error de conexión: ' . $e->getMessage();
 }
 ?>

@@ -4,47 +4,36 @@ include_once("../conexion.php");
 session_start();
 
 // Recojemos el valor de la sesión 'id_usuario' y lo guardamos en una variable
-$camareroActual = mysqli_real_escape_string($con, htmlspecialchars($_SESSION['id_usuario']));
+$camareroActual = $_SESSION['id_usuario'];
 
-$sqlComprobar = "SELECT tipo_usuario FROM usuarios WHERE id_usuario = ?";
-$stmtComprobar = mysqli_prepare($con, $sqlComprobar);
-mysqli_stmt_bind_param($stmtComprobar, "i", $camareroActual);
-mysqli_stmt_execute($stmtComprobar);
-mysqli_stmt_bind_result($stmtComprobar, $tipoUsuario);
-mysqli_stmt_fetch($stmtComprobar);
-mysqli_stmt_close($stmtComprobar);
+try {
+    // Preparar la consulta para verificar el tipo de usuario
+    $stmtComprobar = $pdo->prepare("SELECT tipo_usuario FROM usuarios WHERE id_usuario = :id_usuario");
+    $stmtComprobar->execute(['id_usuario' => $camareroActual]);
+    $tipoUsuario = $stmtComprobar->fetchColumn();
 
-
-
-if (!isset($_SESSION['id_usuario'])) {
-
-    header('Location: ' . '../index.php');
-    exit();
-} elseif ($tipoUsuario != "manager") {
-
-    header('Location: ' . '../Camarero/camarero_home.php');
-    exit();
-} else {
-
-
+    if (!isset($_SESSION['id_usuario'])) {
+        header('Location: ' . '../index.php');
+        exit();
+    } elseif ($tipoUsuario != "manager") {
+        header('Location: ' . '../Camarero/camarero_home.php');
+        exit();
+    } else {
         // Recojemos el valor del input para filtrar por sala y el valor del input para filtrar por fecha
-        $buscar_sala = isset($_GET['buscarSala']) ? mysqli_real_escape_string($con, htmlspecialchars($_GET['buscarSala'])) : '';
-        $buscar_camarero = isset($_GET['buscarCamarero']) ? mysqli_real_escape_string($con, htmlspecialchars($_GET['buscarCamarero'])) : '';
-        $buscar_estado = isset($_GET['buscarEstado']) ? mysqli_real_escape_string($con, htmlspecialchars($_GET['buscarEstado'])) : '';
-        $fecha = isset($_GET['fecha']) ? mysqli_real_escape_string($con, htmlspecialchars($_GET['fecha'])) : '';
+        $buscar_sala = isset($_GET['buscarSala']) ? $_GET['buscarSala'] : '';
+        $buscar_camarero = isset($_GET['buscarCamarero']) ? $_GET['buscarCamarero'] : '';
+        $buscar_estado = isset($_GET['buscarEstado']) ? $_GET['buscarEstado'] : '';
+        $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : '';
 
-    // Comprobamos si se se recibe el valor de 'pagina', si se recibe, lo recojemos, sino nos lleva a 'Historial Mesas'
-    $paginas = isset($_GET['pagina']) ? $_GET['pagina'] : 'default';
+        // Comprobamos si se se recibe el valor de 'pagina', si se recibe, lo recojemos, sino nos lleva a 'Historial Mesas'
+        $paginas = isset($_GET['pagina']) ? $_GET['pagina'] : 'default';
 
-    // Creamos una variable, que más tarde comprobará si la consulta que estamos creando ya tiene un ORDER BY definido
-    // Esto lo hacemos porque, más tarde (cuando filtremos), añadiremos un ORDER BY a la consulta para ordenar por 'id_mesa' e 'id_sala'
-    $tieneORDERBY = false;
+        // Creamos una variable, que más tarde comprobará si la consulta que estamos creando ya tiene un ORDER BY definido
+        $tieneORDERBY = false;
 
-    // CAMBIAR ENTRE PÁGINAS (OCUPACIONES / SALAS / SALAS MÁS USADAS / HISTORIAL MESAS)
-    switch ($paginas) {
-
+        // CAMBIAR ENTRE PÁGINAS (OCUPACIONES / SALAS / SALAS MÁS USADAS / HISTORIAL MESAS)
+        switch ($paginas) {
             case 'historial':
-                
                 $sqlHistorial = "SELECT mesas.id_mesa AS id_mesa, mesas.capacidad, mesas.estado, mesas.id_sala,
                     salas.id_sala, salas.nombre, salas.capacidad,
                     ocupaciones.id_ocupacion, ocupaciones.id_mesa AS id_mesas_ocupadas, ocupaciones.sillas, ocupaciones.fecha_ocupacion, ocupaciones.fecha_libera,
@@ -52,27 +41,21 @@ if (!isset($_SESSION['id_usuario'])) {
                     FROM mesas
                     INNER JOIN salas ON salas.id_sala = mesas.id_sala
                     LEFT JOIN ocupaciones ON ocupaciones.id_mesa = mesas.id_mesa
-                    LEFT JOIN usuarios ON usuarios.id_usuario = ocupaciones.id_usuario 
-                    ";
-
-            $tieneORDERBY = false;
-            break;
-
+                    LEFT JOIN usuarios ON usuarios.id_usuario = ocupaciones.id_usuario";
+                $tieneORDERBY = false;
+                break;
 
             case 'sala':
-
-            $sqlHistorial = "SELECT salas.id_sala, salas.nombre, salas.capacidad, 
+                $sqlHistorial = "SELECT salas.id_sala, salas.nombre, salas.capacidad, 
                     mesas.id_mesa, mesas.capacidad AS capacidad_mesa, mesas.estado, mesas.id_sala
                     FROM salas
                     INNER JOIN mesas ON salas.id_sala = mesas.id_sala
                     GROUP BY salas.id_sala";
+                $tieneORDERBY = false;
+                break;
 
-            $tieneORDERBY = false;
-            break;
-
-        case 'uso':
-
-            $sqlHistorial = "SELECT ocupaciones.id_mesa, COUNT(ocupaciones.id_mesa) AS numero_de_usos, 
+            case 'uso':
+                $sqlHistorial = "SELECT ocupaciones.id_mesa, COUNT(ocupaciones.id_mesa) AS numero_de_usos, 
                     GROUP_CONCAT(ocupaciones.id_ocupacion) AS ocupaciones_concatenadas, mesas.capacidad, mesas.estado, mesas.id_sala,
                     salas.id_sala, salas.nombre, salas.capacidad
                     FROM ocupaciones
@@ -80,12 +63,10 @@ if (!isset($_SESSION['id_usuario'])) {
                     INNER JOIN salas ON salas.id_sala = mesas.id_sala
                     GROUP BY ocupaciones.id_mesa
                     ORDER BY numero_de_usos DESC";
+                $tieneORDERBY = true;
+                break;
 
-            $tieneORDERBY = true;
-            break;
-
-        default:
-
+            default:
                 $sqlHistorial = "SELECT ocupaciones.id_ocupacion, ocupaciones.id_mesa, ocupaciones.id_usuario, 
                 ocupaciones.fecha_ocupacion, ocupaciones.fecha_libera, ocupaciones.sillas, mesas.id_mesa, mesas.capacidad, 
                 mesas.estado, mesas.id_sala,
@@ -95,67 +76,49 @@ if (!isset($_SESSION['id_usuario'])) {
                 INNER JOIN mesas ON mesas.id_mesa = ocupaciones.id_mesa
                 INNER JOIN salas ON salas.id_sala = mesas.id_sala
                 INNER JOIN usuarios ON usuarios.id_usuario = ocupaciones.id_usuario";
+                $tieneORDERBY = false;
+                break;
+        }
 
-            $tieneORDERBY = false;
-            break;
-    }
+        // AÑADIMOS LOS FILTROS
+        $filtros = [];
+        $parametros = [];
 
-    // AÑADIMOS LOS FILTROS
-
-    // Creamos una variable (array) para los filtros y otra para los parametros
-    // (filtrará todas las letras/números que estén en los filtros)
-    $filtros = [];
-    $parametros = [];
-
-        // Si hemos introducido texto en el input 'buscarCamarero'
         if ($buscar_camarero != "") {
-            $filtros[] = "usuarios.nombre_completo LIKE ?";
-            $parametros[] = '%' . $buscar_camarero . '%';
+            $filtros[] = "usuarios.nombre_completo LIKE :buscarCamarero";
+            $parametros['buscarCamarero'] = '%' . $buscar_camarero . '%';
         }
 
-        // Si hemos introducido texto en el input 'buscarSala'
         if ($buscar_sala != "") {
-            $filtros[] = "salas.nombre LIKE ?";
-            $parametros[] = '%' . $buscar_sala . '%';
+            $filtros[] = "salas.nombre LIKE :buscarSala";
+            $parametros['buscarSala'] = '%' . $buscar_sala . '%';
         }
 
-        // Si hemos introducido texto en el input 'buscarSala'
         if ($buscar_estado != "") {
-            $filtros[] = "mesas.estado LIKE ?";
-            $parametros[] = '%' . $buscar_estado . '%';
+            $filtros[] = "mesas.estado LIKE :buscarEstado";
+            $parametros['buscarEstado'] = '%' . $buscar_estado . '%';
         }
 
+        if ($fecha != "") {
+            $filtros[] = "ocupaciones.fecha_ocupacion LIKE :fecha";
+            $parametros['fecha'] = '%' . $fecha . '%';
+        }
 
-    // Si hemos introducido una fecha en el input 'fecha'
-    if ($fecha != "") {
-        $filtros[] = "ocupaciones.fecha_ocupacion LIKE ?";
-        $parametros[] = '%' . $fecha . '%';
+        if (!empty($filtros)) {
+            $sqlHistorial .= " WHERE " . implode(" AND ", $filtros);
+        }
+
+        if (!$tieneORDERBY) {
+            $sqlHistorial .= " ORDER BY salas.id_sala, mesas.id_mesa";
+        }
+
+        // Preparamos y ejecutamos la consulta
+        $stmtPáginaHistorial = $pdo->prepare($sqlHistorial);
+        $stmtPáginaHistorial->execute($parametros);
+        $resultado = $stmtPáginaHistorial->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    // Si hay filtros, los añadimos a la consulta
-    if (!empty($filtros)) {
-        $sqlHistorial .= " WHERE " . implode(" AND ", $filtros);
-    }
-
-    // Comprobamos si la consulta que tenemos actualmente (dependiendo de en que página estemos)
-    if (!$tieneORDERBY) {
-        $sqlHistorial .= " ORDER BY salas.id_sala, mesas.id_mesa";
-    }
-
-    // Preparamos y ejecutamos la consulta
-    $stmtPáginaHistorial = mysqli_prepare($con, $sqlHistorial);
-
-    // Si los parámetros no están vacíos (si contiene valores),
-    // generamos una cadena y le decimos que cada parámetro es una cadena de texto ('s').
-    // Asociamos la cadena anterior a la consulta con todos los parámetros
-    if ($parametros) {
-        $tiposParametros = str_repeat('s', count($parametros));
-        mysqli_stmt_bind_param($stmtPáginaHistorial, $tiposParametros, ...$parametros);
-    }
-
-    // Ejecutamos la consulta y creamos una variable "resultado" que guarda la consulta en esta
-    mysqli_stmt_execute($stmtPáginaHistorial);
-    $resultado = mysqli_stmt_get_result($stmtPáginaHistorial);
+} catch (PDOException $e) {
+    echo 'Error de conexión: ' . $e->getMessage();
 }
 ?>
 
@@ -304,7 +267,7 @@ if (!isset($_SESSION['id_usuario'])) {
                         <th>Estado</th>
                         <th>Camarero</th>
                         <th>Fecha ocupación</th>
-                        <th>Fecha liberación</th>
+                        <th>Fecha liberaci��n</th>
 
                     <?php endif; ?>
                 </tr>
