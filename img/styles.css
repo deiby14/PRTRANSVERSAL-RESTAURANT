@@ -1,0 +1,182 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Clear floats after the columns */
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+/* Diseño de columnas */
+
+.column-1 {
+    width: 100%;
+    float: left;
+}
+
+.column-1-footer {
+    width: 100%;
+    float: left;
+}
+
+.column-2 {
+    width: 50%;
+    float: left;
+}
+
+.column-3 {
+    width: 33.33%;
+    float: left;
+}
+
+.column-4 {
+    width: 25%;
+    float: left;
+}
+
+.column-5 {
+    width: 20%;
+    float: left;
+}
+
+.column-6 {
+    width: 16.66%;
+    float: left;
+}
+
+.column-75 {
+    width: 75%;
+    float: left;
+}
+
+/* clase para centrar contenido en horizontal y vertical (lo centra respecto al elemento padre) */
+
+.flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* LogIn */
+#bodyLogIn {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+#containerLogIn {
+    display: flex;
+    width: 80%;
+    height: 80vh;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.left-section,
+.right-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-section {
+    background-color: #ebb41da0;
+    padding: 40px;
+}
+
+.right-section {
+    padding: 40px;
+}
+
+.labelLogIn {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: white;
+}
+
+.inputLogIn {
+    width: 60vh;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #dbdbdb;
+    border-radius: 5px;
+}
+
+.botonLogIn {
+    background-color: #e58517;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.botonLogIn:hover {
+    background-color: #bf6f00ad;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+}
+
+#logoLogIn {
+    width: 100%;
+    object-fit: contain;
+}
+
+/* Responsive design: when screen size is smaller, adjust layout */
+@media (max-width: 800px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        width: 90%;
+    }
+
+    #bodyLogIn {
+        height: 130vh;
+    }
+
+    .left-section,
+    .right-section {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    .left-section {
+        order: 2;
+        text-align: center;
+    }
+
+    .right-section {
+        order: 1;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .inputLogIn {
+        width: 80%;
+    }
+
+    .botonLogIn {
+        width: 80%;
+    }
+}
+
+/* Fin LogIn */

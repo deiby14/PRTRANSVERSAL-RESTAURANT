@@ -1,0 +1,432 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Kanit", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+/* Clear floats after the columns */
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+/* Diseño de columnas */
+
+.column-1 {
+    width: 100%;
+    float: left;
+}
+
+.column-2 {
+    width: 50%;
+    float: left;
+}
+
+.column-3 {
+    width: 33.33%;
+    float: left;
+}
+
+.column-4 {
+    width: 25%;
+    height: 85vh;
+    float: left;
+}
+
+.column-5 {
+    width: 20%;
+    float: left;
+}
+
+.column-6 {
+    width: 16.66%;
+    float: left;
+}
+
+.column-75 {
+    width: 75%;
+    height: 85vh;
+    float: left;
+}
+
+/* clase para centrar contenido en horizontal y vertical (lo centra respecto al elemento padre) */
+
+.flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* LogIn */
+#bodyLogIn {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+#containerLogIn {
+    display: flex;
+    width: 80%;
+    height: 80vh;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.left-section,
+.right-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-section {
+    background-color: #ebb41da0;
+    padding: 40px;
+}
+
+.right-section {
+    padding: 40px;
+}
+
+.labelLogIn {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: white;
+}
+
+.inputLogIn {
+    width: 60vh;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #dbdbdb;
+    border-radius: 5px;
+}
+
+.botonLogIn {
+    background-color: #e58517;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.botonLogIn:hover {
+    background-color: #bf6f00ad;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+}
+
+#logoLogIn {
+    width: 100%;
+    object-fit: contain;
+}
+
+@media (max-width: 800px) {
+    #containerLogIn {
+        flex-direction: column;
+        height: auto;
+        width: 90%;
+    }
+
+    #bodyLogIn {
+        height: 130vh;
+    }
+
+    .left-section,
+    .right-section {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    .left-section {
+        order: 2;
+        text-align: center;
+    }
+
+    .right-section {
+        order: 1;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .inputLogIn {
+        width: 80%;
+    }
+
+    .botonLogIn {
+        width: 80%;
+    }
+}
+
+/* Fin LogIn */
+/* Inicio Manager */
+#bodyGen {
+    background-image: url('../img/FondoMan.jpg');
+    margin: 6vh;
+}
+
+.imgMan {
+    height: 44vh;
+    transition: 0.5s;
+    border-radius: 20px;
+    filter: brightness(70%);
+}
+
+.image-containerMan:hover .imgMan {
+    height: 46.5vh;
+    filter: brightness(50%);
+}
+
+.image-containerMan {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.image-containerMan:hover .text-overlay {
+    opacity: 1;
+}
+
+.text-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 2.5em;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.5s;
+    text-align: center;
+    z-index: 1;
+}
+
+#h1Sel {
+    text-align: center;
+    padding-bottom: 3vh;
+    padding-top: 3vh;
+    color: white;
+}
+
+.content {
+    display: none;
+}
+
+.ocultar {
+    display: none;
+}
+
+.volverBtn {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.volverBtn:hover {
+    background-color: #2980b9;
+}
+
+#volverTerraza,
+#volverComedor,
+#volverPrivada {
+    display: none;
+}
+
+/* Fin Manager */
+/* Comedor */
+.imgComedor {
+    height: 60vh;
+    transition: 0.5s;
+    border-radius: 20px;
+    filter: brightness(70%);
+}
+
+.image-container:hover .imgComedor {
+    height: 65vh;
+    filter: brightness(50%);
+}
+
+/* Fin Comedor*/
+/* Sala privada*/
+.imgSalaPriv {
+    height: 33.3vh;
+    transition: 0.5s;
+    border-radius: 20px;
+    filter: brightness(70%);
+}
+
+.image-container:hover .imgSalaPriv {
+    height: 37vh;
+    filter: brightness(50%);
+}
+
+/* Fin sala privada*/
+/* Terraza*/
+.imgTerraza {
+    height: 44vh;
+    transition: 0.5s;
+    border-radius: 20px;
+    filter: brightness(70%);
+}
+
+.image-container:hover .imgTerraza {
+    height: 46.5vh;
+    filter: brightness(50%);
+}
+
+/* Fin Terraza*/
+/* Inicio Nav*/
+nav #LogoNav {
+    height: 50px;
+    cursor: pointer;
+}
+
+nav {
+    background-color: white;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#divSession {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 800px) {
+
+    .navbar {
+        display: none;
+    }
+
+    .navbar-toggler {
+        display: block;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+
+    .navbar-collapse {
+        display: none;
+    }
+
+    .navbar-collapse.show {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .d-flex {
+        display: flex;
+        gap: 10px;
+    }
+    #aNav{
+        display: none;
+    }
+}
+
+/* Fin Nav*/
+/* Inicio Salas Mesas*/
+.image-container {
+    position: relative;
+    text-align: center;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+.mesa-button {
+    position: absolute;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #28a745;
+    /* verde por defecto (libre) */
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.image-containerMes {
+    position: relative;
+    text-align: center;
+    margin-top: 20px;
+    display: inline-block;
+    margin-left: 27%;
+}
+
+.mesa-button.ocupada {
+    background-color: #dc3545;
+}
+
+/* Fin Salas Mesas*/
+
+@media (max-width: 800px) {
+    #bodyGen {
+        margin: 3vh;
+    }
+
+    .imgMan,
+    .imgTerraza,
+    .imgComedor,
+    .imgSalaPriv {
+        height: 100%;
+        width: 100%;
+        filter: brightness(50%);
+    }
+
+    .image-container {
+        max-width: 100%;
+    }
+
+    #h1Sel {
+        font-size: 2.5em;
+        color: white;
+    }
+
+    .text-overlay {
+        font-size: 2em;
+        opacity: 1;
+    }
+
+    .image-containerMes {
+        position: relative;
+        text-align: center;
+        margin-top: 20px;
+        display: inline-block;
+        margin-left: 0%;
+        max-width: 100%;
+    }
+
+    #displayedImage {
+        max-width: 100%;
+    }
+}
