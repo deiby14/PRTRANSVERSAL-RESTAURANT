@@ -138,3 +138,28 @@ INSERT INTO Mesas (id_sala, capacidad) VALUES
 (8, 6),
 (8, 6),
 (9, 6);
+
+
+-- Tabla actualizada de usuarios para admitir más roles
+ALTER TABLE `usuarios`
+MODIFY COLUMN `tipo_usuario` ENUM('camarero', 'manager', 'mantenimiento', 'administrador') NOT NULL;
+
+-- Nueva tabla para gestionar reservas de recursos
+CREATE TABLE `reservas_recursos` (
+  `id_reserva` INT NOT NULL AUTO_INCREMENT,
+  `id_recurso` INT NOT NULL,
+  `tipo_recurso` ENUM('camarero', 'sala', 'mesa', 'silla') NOT NULL,
+  `fecha` DATE NOT NULL,
+  `hora_inicio` TIME NOT NULL,
+  `hora_fin` TIME NOT NULL,
+  `id_usuario` INT NOT NULL,
+  PRIMARY KEY (`id_reserva`),
+  CONSTRAINT `fk_reserva_usuario`
+    FOREIGN KEY (`id_usuario`)
+    REFERENCES `usuarios` (`id_usuario`)
+    ON DELETE CASCADE,
+  CONSTRAINT `fk_reserva_recurso`
+    FOREIGN KEY (`id_recurso`)
+    REFERENCES `mesas` (`id_mesa`) -- Esto se adaptará a otros recursos
+    ON DELETE CASCADE
+);

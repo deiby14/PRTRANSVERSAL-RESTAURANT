@@ -20,13 +20,13 @@ session_start();
         <div class="left-section">
             <form action="./validaciones/validacion.php" method="POST" autocomplete="off">
                 <div class="inputs">
-                    <!-- Ecitar inyeccion HTML -->
+                    <!-- Evitar inyección HTML -->
                     <label class="labelLogIn" for="nombre">Usuario:</label>
                     <input class="inputLogIn" type="text" id="nombre" name="nombre" placeholder="Introducir usuario" 
                     value="<?php echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre'], ENT_QUOTES, 'UTF-8') : ''; ?>"> 
                     
                     <br>
-                    <!-- validacion usuario javascript y en rojo -->
+                    <!-- Validación usuario JavaScript y en rojo -->
                     <span id="error-nombre" style="color: red;"></span> 
                 </div>
 
@@ -34,16 +34,20 @@ session_start();
                     <label class="labelLogIn" for="contraseña">Contraseña:</label>
                     <input class="inputLogIn" type="password" id="contraseña" name="contrasena" placeholder="Introducir contraseña" autocomplete="off">
                      <br>
-                     <!-- validacion javascript para contraseña -->
+                     <!-- Validación JavaScript para contraseña -->
                     <span id="error-contraseña" style="color: red;"></span> 
                 </div>
 
                 <button type="submit" name="login" class="botonLogIn">Iniciar sesión</button>
 
-                <!-- Mensaje de error si las credenciales son incorrectas -->
-                <?php if (isset($_GET['error']) && $_GET['error'] == 'incorrecto') { ?>
-                    <p style="color: red;">Usuario o contraseña incorrectos</p>
-                <?php } ?>
+                <!-- Mensajes de error -->
+                <?php if (isset($_GET['error'])): ?>
+                    <?php if ($_GET['error'] == 'incorrecto'): ?>
+                        <p style="color: red;">Usuario o contraseña incorrectos</p>
+                    <?php elseif ($_GET['error'] == 'no_autorizado'): ?>
+                        <p style="color: red;">No tienes permisos para acceder</p>
+                    <?php endif; ?>
+                <?php endif; ?>
             </form>
         </div>
 

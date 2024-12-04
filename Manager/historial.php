@@ -8,7 +8,7 @@ $camareroActual = $_SESSION['id_usuario'];
 
 try {
     // Preparar la consulta para verificar el tipo de usuario
-    $stmtComprobar = $pdo->prepare("SELECT tipo_usuario FROM usuarios WHERE id_usuario = :id_usuario");
+    $stmtComprobar = $con->prepare("SELECT tipo_usuario FROM usuarios WHERE id_usuario = :id_usuario");
     $stmtComprobar->execute(['id_usuario' => $camareroActual]);
     $tipoUsuario = $stmtComprobar->fetchColumn();
 
@@ -113,7 +113,7 @@ try {
         }
 
         // Preparamos y ejecutamos la consulta
-        $stmtPáginaHistorial = $pdo->prepare($sqlHistorial);
+        $stmtPáginaHistorial = $con->prepare($sqlHistorial);
         $stmtPáginaHistorial->execute($parametros);
         $resultado = $stmtPáginaHistorial->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -22,26 +22,32 @@ try {
     if ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
         // Verificar la contraseña
         if (password_verify($contrasena, $fila['contraseña'])) {
-            // Almacenar el id_usuario en la sesión y eliminar el nombre almacenado
-            $_SESSION['id_usuario'] = $fila['id_usuario'];
-            $_SESSION['nombre'] = $_POST['nombre'];
-
-            // Redirigir según el tipo de usuario
+            // Verificar el tipo de usuario
             if ($fila['tipo_usuario'] === 'camarero') {
+                $_SESSION['id_usuario'] = $fila['id_usuario'];
+                $_SESSION['nombre'] = $usuario; // Almacenar el nombre correcto
                 header("Location: ../Camarero/camarero_home.php");
+                exit();
             } elseif ($fila['tipo_usuario'] === 'manager') {
+                $_SESSION['id_usuario'] = $fila['id_usuario'];
+                $_SESSION['nombre'] = $usuario; // Almacenar el nombre correcto
                 header("Location: ../Manager/manager_home.php");
+                exit();
+            } else {
+                // Usuario no autorizado
+                unset($_SESSION['nombre']); // Eliminar el nombre de la sesión
+                header("Location: ../index.php?error=no_autorizado");
+                exit();
             }
-            exit();
         } else {
-            // Si la contraseña no es correcta, redirigir con error y almacenar el nombre en la sesión
-            $_SESSION['nombre'] = htmlspecialchars($usuario, ENT_QUOTES, 'UTF-8');
+            // Contraseña incorrecta
+            unset($_SESSION['nombre']); // Eliminar el nombre de la sesión
             header("Location: ../index.php?error=incorrecto");
             exit();
         }
     } else {
-        // Si el usuario no existe, redirigir con error y almacenar el nombre en la sesión
-        $_SESSION['nombre'] = htmlspecialchars($usuario, ENT_QUOTES, 'UTF-8');
+        // Usuario no encontrado
+        unset($_SESSION['nombre']); // Eliminar el nombre de la sesión
         header("Location: ../index.php?error=incorrecto");
         exit();
     }

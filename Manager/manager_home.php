@@ -7,7 +7,7 @@ $camareroActual = $_SESSION['id_usuario'];
 
 try {
     // Preparar la consulta para verificar el tipo de usuario
-    $stmtComprobar = $pdo->prepare("SELECT tipo_usuario FROM usuarios WHERE id_usuario = :id_usuario");
+    $stmtComprobar = $con->prepare("SELECT tipo_usuario FROM usuarios WHERE id_usuario = :id_usuario");
     $stmtComprobar->execute(['id_usuario' => $camareroActual]);
     $tipoUsuario = $stmtComprobar->fetchColumn();
 
@@ -52,6 +52,7 @@ try {
                     </div>
                     <div class="d-flex align-items-center">
                         <a href="../CerrarSesion.php" class="btn btn-primary me-3">Cerrar sesión</a>
+                        <a href="trabajadores.php" class="btn btn-primary me-3">Trabajdores</a>
                         <a href="./historial.php" class="btn btn-secondary me-3">Ver Historial</a>
                         <a href="./manager_home.php" class="btn btn-secondary">Volver</a>
                     </div>
@@ -78,6 +79,11 @@ try {
                         <h3 class="text-overlay">Terraza</h3>
                         <img class="imgMan Terraza" src="../img/TerrazaBtn.png" alt="Terraza">
                     </a>
+
+
+
+
+
                 </div>
             </div>
         </div>
