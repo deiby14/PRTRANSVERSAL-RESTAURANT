@@ -144,22 +144,22 @@ INSERT INTO Mesas (id_sala, capacidad) VALUES
 ALTER TABLE `usuarios`
 MODIFY COLUMN `tipo_usuario` ENUM('camarero', 'manager', 'mantenimiento', 'administrador') NOT NULL;
 
--- Nueva tabla para gestionar reservas de recursos
-CREATE TABLE `reservas_recursos` (
+
+
+CREATE TABLE `reservas` (
   `id_reserva` INT NOT NULL AUTO_INCREMENT,
-  `id_recurso` INT NOT NULL,
-  `tipo_recurso` ENUM('camarero', 'sala', 'mesa', 'silla') NOT NULL,
-  `fecha` DATE NOT NULL,
-  `hora_inicio` TIME NOT NULL,
-  `hora_fin` TIME NOT NULL,
-  `id_usuario` INT NOT NULL,
+  `id_mesa` INT NOT NULL,
+  `nombre_cliente` VARCHAR(100) NOT NULL,
+  `cantidad_personas` INT NOT NULL,
+  `hora_reserva` DATETIME NOT NULL,
+  `hora_fin` DATETIME NOT NULL, 
+  `fecha_reserva` TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+  `camarero_id` INT NOT NULL,  
   PRIMARY KEY (`id_reserva`),
-  CONSTRAINT `fk_reserva_usuario`
-    FOREIGN KEY (`id_usuario`)
+  CONSTRAINT `fk_mesa`
+    FOREIGN KEY (`id_mesa`)
+    REFERENCES `mesas` (`id_mesa`),
+  CONSTRAINT `fk_camarero`
+    FOREIGN KEY (`camarero_id`)
     REFERENCES `usuarios` (`id_usuario`)
-    ON DELETE CASCADE,
-  CONSTRAINT `fk_reserva_recurso`
-    FOREIGN KEY (`id_recurso`)
-    REFERENCES `mesas` (`id_mesa`) -- Esto se adaptará a otros recursos
-    ON DELETE CASCADE
 );

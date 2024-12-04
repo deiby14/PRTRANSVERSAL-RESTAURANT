@@ -4,6 +4,11 @@ if (!isset($_SESSION['nombre'])) {
     header("Location: ../index.php");
     exit();
 }
+
+include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
+
+// Aquí corregimos la consulta para usar 'id_sala' en lugar de 'comedor_id'
+$result = $con->query("SELECT * FROM mesas WHERE id_sala = 4"); // Comedor 1 tiene id_sala = 4
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,13 +24,73 @@ if (!isset($_SESSION['nombre'])) {
     <!-- Bootstrap JS (y dependencias) -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <style>
+        /* Estilos para las mesas representadas como rectángulos */
+        .mesas-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Se ajusta según el espacio disponible */
+            gap: 20px; /* Espacio entre los rectángulos */
+            padding: 20px;
+        }
 
+        .mesa-container-item {
+            display: flex;
+            flex-direction: column; /* Apila el contenido de la mesa y el botón verticalmente */
+            align-items: center; /* Centra el contenido */
+        }
+
+        .mesa {
+            width: 150px; /* Ancho de cada rectángulo */
+            height: 150px; /* Alto de cada rectángulo */
+            background-color: #007bff; /* Color del rectángulo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px; /* Bordes redondeados */
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            flex-direction: column; /* Asegura que el texto esté en columna */
+            padding: 10px;
+        }
+
+        .mesa:hover {
+            background-color: #0056b3; /* Cambio de color al pasar el ratón */
+        }
+
+        .mesa-id {
+            font-size: 1.5em; /* Tamaño de fuente más grande para la ID de la mesa */
+            font-weight: bold; /* Negrita para la ID */
+        }
+
+        .mesa-capacidad {
+            font-size: 0.9em; /* Tamaño de fuente más pequeño para la capacidad */
+            color: #ddd; /* Color gris claro para la capacidad */
+        }
+
+        /* Estilos para el botón "Reservar" */
+        .btn-reservar {
+            width: 150px; /* Igual al ancho del rectángulo de la mesa */
+            background-color: #28a745; /* Color verde del botón */
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px; /* Separación del rectángulo */
+        }
+
+        .btn-reservar:hover {
+            background-color: #218838; /* Cambio de color al pasar el ratón */
+        }
+    </style>
 </head>
 
 <body id="bodyGen">
     <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
         <div class="container">
-            <!-- Logo como botón de hamburguesa -->
             <a href="./manager_home.php" data-bs-toggle="collapse" data-bs-target="#navbarButtonsExample" aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
                 <img id="LogoNav" src="../img/LOGO-REST.png" alt="Logo" />
             </a>
@@ -48,13 +113,29 @@ if (!isset($_SESSION['nombre'])) {
         </div>
     </nav>
 
-
-
-    <div class="image-containerMes">
-        <img id="displayedImage" src="" alt="">
-        <div id="mesaButtonsContainer"></div>
+    <div class="mesas-container">
+        <?php
+        // Usamos fetch(PDO::FETCH_ASSOC) para obtener un arreglo asociativo
+        while ($mesa = $result->fetch(PDO::FETCH_ASSOC)) {
+            echo '<div class="mesa-container-item">'; // Contenedor para mesa y botón
+            echo '<div class="mesa">';
+            echo '<h3 class="mesa-id">Mesa: ' . htmlspecialchars($mesa['id_mesa']) . '</h3>';
+            echo '<p class="mesa-capacidad">Capacidad: ' . htmlspecialchars($mesa['capacidad']) . ' personas</p>';
+            echo '</div>';
+            // Agregamos el botón de reserva debajo de cada mesa
+            echo '<button class="btn-reservar" onclick="reservarMesa(' . $mesa['id_mesa'] . ')">Reservar</button>';
+            echo '</div>'; // Cierre del contenedor de mesa y botón
+        }
+        ?>
     </div>
+
     <script src="../Js/volver.js"></script>
+    
+
 </body>
 
 </html>
+
+<?php
+$con = null; // Cerramos la conexión PDO
+?>
