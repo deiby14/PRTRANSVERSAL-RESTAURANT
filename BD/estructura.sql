@@ -163,3 +163,5 @@ CREATE TABLE `reservas` (
     FOREIGN KEY (`camarero_id`)
     REFERENCES `usuarios` (`id_usuario`)
 );
+ ALTER TABLE `reservas`
+    -> ADD COLUMN `estado` ENUM('libre', 'ocupada') NOT NULL DEFAULT 'libre';

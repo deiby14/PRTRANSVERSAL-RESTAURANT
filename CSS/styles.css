@@ -430,3 +430,92 @@ nav {
         max-width: 100%;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.mesas-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Se ajusta según el espacio disponible */
+    gap: 20px; /* Espacio entre los rectángulos */
+    padding: 20px;
+}
+
+.mesa-container-item {
+    display: flex;
+    flex-direction: column; /* Apila el contenido de la mesa y el botón verticalmente */
+    align-items: center; /* Centra el contenido */
+}
+
+.mesa {
+    width: 150px; /* Ancho de cada rectángulo */
+    height: 150px; /* Alto de cada rectángulo */
+    background-color: #007bff; /* Color del rectángulo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px; /* Bordes redondeados */
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    flex-direction: column; /* Asegura que el texto esté en columna */
+    padding: 10px;
+}
+
+.mesa:hover {
+    background-color: #0056b3; /* Cambio de color al pasar el ratón */
+}
+
+.mesa-id {
+    font-size: 1.5em; /* Tamaño de fuente más grande para la ID de la mesa */
+    font-weight: bold; /* Negrita para la ID */
+}
+
+.mesa-capacidad {
+    font-size: 0.9em; /* Tamaño de fuente más pequeño para la capacidad */
+    color: #ddd; /* Color gris claro para la capacidad */
+}
+
+/* Estilos para el botón "Reservar" */
+.btn-reservar {
+    width: 150px; /* Igual al ancho del rectángulo de la mesa */
+    background-color: #28a745; /* Color verde del botón */
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px; /* Separación del rectángulo */
+}
+
+.btn-reservar:hover {
+    background-color: #218838; /* Cambio de color al pasar el ratón */
+}
+
+.reservado {
+    background-color: red;
+}
+
+.libre {
+    background-color: green;
+}
+
