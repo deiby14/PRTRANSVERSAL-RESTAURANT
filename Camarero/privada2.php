@@ -49,11 +49,10 @@ if (!isset($_SESSION['nombre'])) {
         </div>
     </nav>
     <div class="image-containerMes">
-        <img id="displayedImage" src="../img/priv2.jpg" alt="Privada 2">
+        <img id="displayedImage" src="" alt="">
         <div id="mesaButtonsContainer"></div>
     </div>
     <script src="../Js/volver.js"></script>
-    <script src="../Js/privada2.js"></script>
 
 </body>
 
