@@ -16,19 +16,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nombre_cliente = $_POST['nombre_cliente'];
     $cantidad_personas = $_POST['cantidad_personas'];
     $hora_reserva = $_POST['hora_reserva'];
-    $hora_fin = $_POST['hora_fin'];
     $camarero_id = $_SESSION['id_usuario']; // Suponiendo que el ID del camarero está en la sesión
 
     // Insertar la reserva en la base de datos
-    $query = "INSERT INTO reservas (id_mesa, nombre_cliente, cantidad_personas, hora_reserva, hora_fin, camarero_id, estado) 
-              VALUES (:id_mesa, :nombre_cliente, :cantidad_personas, :hora_reserva, :hora_fin, :camarero_id, 'ocupada')";
+    $query = "INSERT INTO reservas (id_mesa, nombre_cliente, cantidad_personas, hora_reserva, camarero_id, estado) 
+              VALUES (:id_mesa, :nombre_cliente, :cantidad_personas, :hora_reserva, :camarero_id, 'ocupada')";
     
     $stmt = $con->prepare($query);
     $stmt->bindParam(':id_mesa', $id_mesa);
     $stmt->bindParam(':nombre_cliente', $nombre_cliente);
     $stmt->bindParam(':cantidad_personas', $cantidad_personas);
     $stmt->bindParam(':hora_reserva', $hora_reserva);
-    $stmt->bindParam(':hora_fin', $hora_fin);
     $stmt->bindParam(':camarero_id', $camarero_id);
 
     if ($stmt->execute()) {
@@ -66,9 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <label for="hora_reserva">Hora de la Reserva:</label>
         <input type="datetime-local" name="hora_reserva" id="hora_reserva" required><br><br>
-
-        <label for="hora_fin">Hora de Fin de la Reserva:</label>
-        <input type="datetime-local" name="hora_fin" id="hora_fin" required><br><br>
 
         <button type="submit">Confirmar Reserva</button>
     </form>

@@ -24,7 +24,6 @@ $result = $con->query("SELECT * FROM mesas WHERE id_sala = 4"); // Comedor 1 tie
     <!-- Bootstrap JS (y dependencias) -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-   
 </head>
 
 <body id="bodyGen">
@@ -55,29 +54,70 @@ $result = $con->query("SELECT * FROM mesas WHERE id_sala = 4"); // Comedor 1 tie
     <div class="mesas-container">
     <?php
     while ($mesa = $result->fetch(PDO::FETCH_ASSOC)) {
-        echo '<div class="mesa-container-item ' . ($mesa['estado'] == 'reservada' ? 'reservada' : 'libre') . '">';
-        
-        // Mostrar el ID y el estado de la mesa
-        echo '<div class="mesa">';
-        echo '<h3 class="mesa-id">Mesa: ' . htmlspecialchars($mesa['id_mesa']) . '</h3>';
-        echo '<p class="mesa-estado">' . htmlspecialchars(ucfirst($mesa['estado'])) . '</p>';
+        echo '<div class="mesa-container-item">'; // Contenedor para mesa y botón
+
+        // Rectángulo con estado
+        echo '<div class="estado-rectangulo ' . ($mesa['estado'] == 'ocupada' ? 'reservada' : 'libre') . '">';
+        echo '<span>' . htmlspecialchars($mesa['estado']) . '</span>';
         echo '</div>';
 
-        // Botón para reservar o liberar
-        echo '<form action="reservar.php" method="GET">
-                <input type="hidden" name="id_mesa" value="' . htmlspecialchars($mesa['id_mesa']) . '">
-                <input type="hidden" name="id_sala" value="4">
-                <button type="submit" class="btn-reservar">' . ($mesa['estado'] == 'reservada' ? 'Liberar' : 'Reservar') . '</button>
-            </form>';
+        // Información de la mesa
+        echo '<div class="mesa">';
+        echo '<h3 class="mesa-id">Mesa: ' . htmlspecialchars($mesa['id_mesa']) . '</h3>';
+        echo '<p class="mesa-capacidad">Capacidad: ' . htmlspecialchars($mesa['capacidad']) . ' personas</p>';
+        echo '</div>';
+
+        // Botón para reservar/liberar
+        echo '<button 
+                type="button" 
+                class="btn-reservar ' . ($mesa['estado'] == 'ocupada' ? 'ocupada' : 'libre') . '" 
+                onclick="gestionarMesa(' . htmlspecialchars($mesa['id_mesa']) . ', \'' . htmlspecialchars($mesa['estado']) . '\')">
+                ' . ($mesa['estado'] == 'ocupada' ? 'Liberar' : 'Reservar') . '
+              </button>';
 
         echo '</div>'; // Cierre del contenedor de mesa y formulario
     }
     ?>
-</div>
-
-
+    </div>
 
     <script src="../Js/volver.js"></script>
+    <script>
+        function gestionarMesa(idMesa, estadoActual) {
+            if (estadoActual === 'ocupada') {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Quieres liberar esta mesa?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, liberar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        cambiarEstadoMesa(idMesa, 'libre');
+                    }
+                });
+            } else {
+                window.location.href = 'reservar.php?id_mesa=' + idMesa + '&id_sala=4';
+            }
+        }
+
+        function cambiarEstadoMesa(idMesa, nuevoEstado) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'procesar_estado_mesa.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    Swal.fire('Mesa actualizada', 'El estado de la mesa ha sido actualizado.', 'success')
+                        .then(() => {
+                            location.reload();
+                        });
+                }
+            };
+            xhr.send('id_mesa=' + idMesa + '&estado=' + nuevoEstado);
+        }
+    </script>
 </body>
 
 </html>
