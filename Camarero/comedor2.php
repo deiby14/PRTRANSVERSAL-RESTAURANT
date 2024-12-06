@@ -5,11 +5,10 @@ if (!isset($_SESSION['nombre'])) {
     exit();
 }
 
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
 
 // Aquí corregimos la consulta para usar 'id_sala' en lugar de 'comedor_id'
 $result = $con->query("SELECT * FROM mesas WHERE id_sala = 5"); // Comedor 1 tiene id_sala = 4
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,54 +25,55 @@ $result = $con->query("SELECT * FROM mesas WHERE id_sala = 5"); // Comedor 1 tie
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     <style>
-        /* Estilos para las mesas representadas como rectángulos */
+        /* Contenedor principal de las mesas */
         .mesas-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Se ajusta según el espacio disponible */
-            gap: 20px; /* Espacio entre los rectángulos */
+            display: flex;
+            flex-wrap: wrap; /* Permite que las mesas se acomoden en varias filas */
+            justify-content: space-around;
+            gap: 20px;
             padding: 20px;
         }
 
-        .mesa {
-            width: 150px; /* Ancho de cada rectángulo */
-            height: 150px; /* Alto de cada rectángulo */
-            background-color: #007bff; /* Color del rectángulo */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px; /* Bordes redondeados */
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .mesa:hover {
-            background-color: #0056b3; /* Cambio de color al pasar el ratón */
-        }
-
-        /* Estilos para el contenedor de cada mesa y su botón */
+        /* Contenedor de cada mesa */
         .mesa-container-item {
-            display: flex;
-            flex-direction: column; /* Apila el contenido de la mesa y el botón verticalmente */
-            align-items: center; /* Centra el contenido */
-        }
-
-        /* Estilos para el botón "Reservar" */
-        .btn-reservar {
-            width: 150px; /* Igual al ancho del rectángulo de la mesa */
-            background-color: #28a745; /* Color verde del botón */
-            color: white;
-            font-size: 16px;
+            width: 250px;
+            text-align: center;
+            margin-bottom: 20px;
             padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px; /* Separación del rectángulo */
+            border: 1px solid #ddd;
+            border-radius: 8px;
         }
 
-        .btn-reservar:hover {
-            background-color: #218838; /* Cambio de color al pasar el ratón */
+        /* Estilo para el rectángulo de estado */
+        .estado-rectangulo {
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .estado-rectangulo.libre {
+            background-color: #28a745; /* Verde */
+            color: white;
+        }
+
+        .estado-rectangulo.ocupada {
+            background-color: #dc3545; /* Rojo */
+            color: white;
+        }
+
+        .mesa {
+            margin-bottom: 10px;
+        }
+
+        /* Diseño de la mesa */
+        .mesa-id {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .mesa-capacidad {
+            font-size: 1em;
+            color: #555;
         }
     </style>
 </head>
@@ -105,27 +105,29 @@ $result = $con->query("SELECT * FROM mesas WHERE id_sala = 5"); // Comedor 1 tie
 
     <div class="mesas-container">
         <?php
-        // Usamos fetch(PDO::FETCH_ASSOC) para obtener un arreglo asociativo
         while ($mesa = $result->fetch(PDO::FETCH_ASSOC)) {
-            echo '<div class="mesa-container-item">'; // Contenedor para mesa y botón
+            echo '<div class="mesa-container-item">'; // Contenedor para mesa y estado
+
+            // Rectángulo con estado
+            echo '<div class="estado-rectangulo ' . ($mesa['estado'] == 'ocupada' ? 'ocupada' : 'libre') . '">';
+            echo '<a href="gestionar_mesa.php?id_mesa=' . htmlspecialchars($mesa['id_mesa']) . '&estado=' . htmlspecialchars($mesa['estado']) . '" style="text-decoration: none; color: inherit;">';
+            echo '<span>' . htmlspecialchars($mesa['estado']) . '</span>';
+            echo '</a>';
+            echo '</div>'; // Cierre del rectángulo de estado
+
+            // Información de la mesa
             echo '<div class="mesa">';
-            echo '<h3 class="nombreMesa">' . htmlspecialchars($mesa['id_mesa']) . '</h3>';
-            echo '</div>';
-            // Agregamos el botón de reserva debajo de cada mesa
-            echo '<button class="btn-reservar" onclick="reservarMesa(' . $mesa['id_mesa'] . ')">Reservar</button>';
-            echo '</div>'; // Cierre del contenedor de mesa y botón
+            echo '<h3 class="mesa-id">Mesa: ' . htmlspecialchars($mesa['id_mesa']) . '</h3>';
+            echo '<p class="mesa-capacidad">Capacidad: ' . htmlspecialchars($mesa['capacidad']) . ' personas</p>';
+            echo '</div>'; // Cierre de la información de la mesa
+
+            echo '</div>'; // Cierre del contenedor de mesa
         }
         ?>
     </div>
 
     <script src="../Js/volver.js"></script>
-    <script>
-        // Función para manejar la acción de reserva
-        function reservarMesa(idMesa) {
-            alert('Reserva para la mesa: ' + idMesa);
-            // Aquí puedes agregar más lógica para gestionar la reserva
-        }
-    </script>
+   
 </body>
 
 </html>

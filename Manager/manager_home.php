@@ -55,6 +55,7 @@ try {
                         <a href="trabajadores.php" class="btn btn-primary me-3">Trabajdores</a>
                         <a href="./historial.php" class="btn btn-secondary me-3">Ver Historial</a>
                         <a href="./manager_home.php" class="btn btn-secondary">Volver</a>
+                        <a href="administrar.php" class="btn btn-secondary">Administrar</a>
                     </div>
                 </div>
             </div>

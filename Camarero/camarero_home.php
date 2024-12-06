@@ -40,6 +40,7 @@ if (!isset($_SESSION['nombre'])) {
                         Cerrar sesión
                     </a>
                     <a href="./camarero_home.php" class="btn btn-secondary">Volver</a>
+                    <a href="form_reservas.php" class="btn btn-secondary">Reservas</a>
                 </div>
             </div>
         </div>

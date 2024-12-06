@@ -165,3 +165,23 @@ CREATE TABLE `reservas` (
 );
  ALTER TABLE `reservas`
     -> ADD COLUMN `estado` ENUM('libre', 'ocupada') NOT NULL DEFAULT 'libre';
+
+    -- Crear la tabla de sillas
+CREATE TABLE `db_restaurante`.`sillas` (
+  `id_silla` INT NOT NULL AUTO_INCREMENT,
+  `id_mesa` INT NOT NULL,
+  PRIMARY KEY (`id_silla`),
+  CONSTRAINT `fk_mesa_sillas`
+    FOREIGN KEY (`id_mesa`)
+    REFERENCES `db_restaurante`.`mesas` (`id_mesa`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
+
+-- Eliminar la columna de sillas en ocupaciones
+ALTER TABLE `ocupaciones`
+DROP COLUMN `sillas`;
+
