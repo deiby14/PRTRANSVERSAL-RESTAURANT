@@ -136,7 +136,12 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
         </form>
     <?php endif; ?>
 
-    <div id="botonAnadir"></div>
+    <div id="botonAnadir"> 
+        
+    </div>  
+
+   
+
     <br><br>
 
     <table class="table">
@@ -201,7 +206,8 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
     </tbody>
 </table>
 
-    <div id="botonAnadir"></div>
+    <div id="botonAnadir"></div> 
+
 
     <script>
         function actualizarBotonAnadir() {

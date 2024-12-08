@@ -90,7 +90,12 @@ $result = $con->query($query);
 
             <button type="submit" class="btn btn-primary">Reservar Mesa</button>
         </form>
+        <br>
+        <button type="" class="btn btn-primary">Ver reservas</button>
+       
     </div>
+    <br>
+    <button type="" class="btn btn-primary">Ver reservas</button>
 
     <script>
         // Aquí puedes agregar más scripts si es necesario

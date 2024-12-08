@@ -1,10 +1,6 @@
 <?php
 include_once("../conexion.php");
 
-// Habilitar la visualización de errores
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 // Verificar si se recibió el ID del trabajador
 if (isset($_GET['id_usuario'])) {
     $id_usuario = $_GET['id_usuario'];
@@ -26,26 +22,32 @@ if (isset($_GET['id_usuario'])) {
 
 // Procesar la actualización de datos
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre_completo = $_POST['nombre_completo'];
-    $tipo_usuario = $_POST['tipo_usuario'];
+    $nombre_completo = trim($_POST['nombre_completo']);
+    $tipo_usuario = trim($_POST['tipo_usuario']);
 
-    // Validar si el tipo de usuario es válido
-    $tipos_validos = ['camarero', 'manager', 'mantenimiento', 'administrador']; // Tipos válidos según tu base de datos
-    if (!in_array($tipo_usuario, $tipos_validos)) {
-        die("Tipo de usuario inválido.");
+    // Validar que los campos no estén vacíos
+    if (empty($nombre_completo) || empty($tipo_usuario)) {
+        $error = "Todos los campos son obligatorios.";
+    } else {
+        // Validar si el tipo de usuario es válido
+        $tipos_validos = ['camarero', 'manager', 'mantenimiento', 'administrador'];
+        if (!in_array($tipo_usuario, $tipos_validos)) {
+            $error = "Tipo de usuario inválido.";
+        } else {
+            // Actualizar los datos del trabajador (sin cambiar la contraseña)
+            $sql = "UPDATE usuarios SET nombre_completo = :nombre_completo, tipo_usuario = :tipo_usuario WHERE id_usuario = :id_usuario";
+            $stmt = $con->prepare($sql);
+            $stmt->bindParam(':nombre_completo', $nombre_completo);
+            $stmt->bindParam(':tipo_usuario', $tipo_usuario);
+            $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
+
+            if ($stmt->execute()) {
+                $mensaje = "Trabajador actualizado con éxito.";
+            } else {
+                $error = "Error al actualizar el trabajador.";
+            }
+        }
     }
-
-    // Actualizar los datos del trabajador (sin cambiar la contraseña)
-    $sql = "UPDATE usuarios SET nombre_completo = :nombre_completo, tipo_usuario = :tipo_usuario WHERE id_usuario = :id_usuario";
-    $stmt = $con->prepare($sql);
-    $stmt->bindParam(':nombre_completo', $nombre_completo);
-    $stmt->bindParam(':tipo_usuario', $tipo_usuario);
-    $stmt->bindParam(':id_usuario', $id_usuario, PDO::PARAM_INT);
-    $stmt->execute();
-
-    // Redirigir a la página de trabajadores después de actualizar
-    header("Location: trabajadores.php");
-    exit();
 }
 ?>
 
@@ -90,12 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         button:hover {
             background-color: #0056b3;
         }
-        .btn-success {
-            background-color: #28a745;
-        }
-        .btn-success:hover {
-            background-color: #218838;
-        }
         .mensaje {
             color: green;
             font-weight: bold;
@@ -107,16 +103,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
         }
     </style>
-    
 </head>
 <body>
     <h1>Editar Trabajador</h1>
+    <?php if (isset($mensaje)): ?>
+        <p class="mensaje"><?= htmlspecialchars($mensaje) ?></p>
+    <?php endif; ?>
+
+    <?php if (isset($error)): ?>
+        <p class="error"><?= htmlspecialchars($error) ?></p>
+    <?php endif; ?>
+
     <form action="editar.php?id_usuario=<?= $trabajador['id_usuario'] ?>" method="POST">
         <label for="nombre_completo">Nombre Completo</label>
-        <input type="text" name="nombre_completo" id="nombre_completo" value="<?= htmlspecialchars($trabajador['nombre_completo']) ?>" required>
+        <input type="text" name="nombre_completo" id="nombre_completo" value="<?= htmlspecialchars($trabajador['nombre_completo']) ?>">
 
         <label for="tipo_usuario">Tipo de Usuario</label>
-        <select name="tipo_usuario" id="tipo_usuario" required>
+        <select name="tipo_usuario" id="tipo_usuario">
             <option value="camarero" <?= $trabajador['tipo_usuario'] === 'camarero' ? 'selected' : '' ?>>Camarero</option>
             <option value="manager" <?= $trabajador['tipo_usuario'] === 'manager' ? 'selected' : '' ?>>Manager</option>
             <option value="mantenimiento" <?= $trabajador['tipo_usuario'] === 'mantenimiento' ? 'selected' : '' ?>>Mantenimiento</option>
