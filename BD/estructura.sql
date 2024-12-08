@@ -163,8 +163,10 @@ CREATE TABLE `reservas` (
     FOREIGN KEY (`camarero_id`)
     REFERENCES `usuarios` (`id_usuario`)
 );
- ALTER TABLE `reservas`
-    -> ADD COLUMN `estado` ENUM('libre', 'ocupada') NOT NULL DEFAULT 'libre';
+
+ ALTER TABLE `reservas` 
+ADD COLUMN `estado` ENUM('libre', 'ocupada') NOT NULL DEFAULT 'libre';
+
 
     -- Crear la tabla de sillas
 CREATE TABLE `db_restaurante`.`sillas` (
