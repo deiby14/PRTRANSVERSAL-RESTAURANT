@@ -9,7 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $repetir_contrasena = trim($_POST['repetir_contrasena'] ?? '');
     $tipo_usuario = $_POST['tipo_usuario'] ?? '';
 
-    if ($nombre_completo && $contrasena && $repetir_contrasena && $tipo_usuario) {
+    // Validar si los campos no están vacíos
+    if (empty($nombre_completo) || empty($contrasena) || empty($repetir_contrasena) || empty($tipo_usuario)) {
+        $mensaje = 'Por favor, completa todos los campos.';
+    } else {
         if ($contrasena !== $repetir_contrasena) {
             $mensaje = 'Las contraseñas no coinciden.';
         } else {
@@ -39,8 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
-    } else {
-        $mensaje = 'Por favor, completa todos los campos.';
     }
 }
 ?>
@@ -108,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1>Añadir Trabajador</h1>
 
     <?php if ($mensaje): ?>
-        <p class="<?= strpos($mensaje, 'Error') !== false || strpos($mensaje, 'no coinciden') !== false ? 'error' : 'mensaje' ?>"><?= htmlspecialchars($mensaje) ?></p>
+        <p class="<?= (strpos($mensaje, 'Error') !== false || strpos($mensaje, 'no coinciden') !== false || strpos($mensaje, 'completa todos los campos') !== false) ? 'error' : 'mensaje' ?>"><?= htmlspecialchars($mensaje) ?></p>
     <?php endif; ?>
 
     <form action="añadir.php" method="post">

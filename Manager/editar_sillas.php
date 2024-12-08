@@ -37,7 +37,21 @@ if (isset($_GET['id'])) {
 
 // Procesar el formulario si se ha enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validar si el campo de sillas no está vacío y que no sea negativo
+    if (empty($_POST['total_sillas']) || $_POST['total_sillas'] < 0) {
+        $_SESSION['mensaje'] = 'El campo de número de sillas no puede estar vacío ni ser negativo.';
+        header("Location: editar_sillas.php?id=" . $id_mesa);
+        exit();
+    }
+
     $total_sillas_nueva = $_POST['total_sillas'];
+
+    // Validar si el número de sillas es mayor que la capacidad de la mesa
+    if ($total_sillas_nueva > $capacidad_mesa) {
+        $_SESSION['mensaje'] = 'No puedes añadir más sillas que la capacidad de la mesa.';
+        header("Location: editar_sillas.php?id=" . $id_mesa);
+        exit();
+    }
 
     try {
         // Eliminar las sillas existentes para esa mesa
@@ -69,6 +83,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Sillas</title>
+    <style>
+        .mensaje {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <?php if (isset($_SESSION['mensaje'])): ?>
@@ -79,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" action="">
         <label for="total_sillas">Número de Sillas:</label>
-        <input type="number" name="total_sillas" value="<?php echo isset($total_sillas) ? $total_sillas : 0; ?>" required min="0">
+        <input type="number" name="total_sillas" value="<?php echo isset($total_sillas) ? $total_sillas : 0; ?>">
 
         <button type="submit">Actualizar Sillas</button>
     </form>

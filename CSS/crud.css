@@ -1,17 +1,34 @@
+/* Estilo general para el body con fondo */
+#bodyGen {
+    background-image: url('../img/FondoMan.jpg');
+    background-size: cover;
+    background-position: center;
+    margin: 6vh;
+    padding: 2vh;
+    min-height: 100vh;
+}
+
+/* Estilo para las tablas */
 table {
     width: 100%;
     border-collapse: collapse;
 }
+
 table, th, td {
     border: 1px solid black;
 }
+
 th, td {
     padding: 8px;
     text-align: center;
+    background-color: #f4f4f4;
 }
+
 th {
     background-color: #f4f4f4;
 }
+
+/* Estilo para los botones */
 .btn {
     padding: 10px 20px;
     text-decoration: none;
@@ -21,21 +38,27 @@ th {
     border: none;
     cursor: pointer;
 }
+
 .btn-primary {
     background-color: #007bff;
 }
+
 .btn-primary:hover {
     background-color: #0056b3;
 }
+
 .btn-danger {
     background-color: #f44336;
 }
+
 .btn-danger:hover {
     background-color: #d32f2f;
 }
+
 .btn-success {
     background-color: #28a745;
 }
+
 .btn-success:hover {
     background-color: #218838;
 }

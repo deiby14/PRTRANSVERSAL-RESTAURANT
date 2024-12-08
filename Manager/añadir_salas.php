@@ -11,28 +11,42 @@ $error = null;
 $mensaje = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $con->beginTransaction(); // Iniciar la transacción
+    // Obtener los datos del formulario
+    $nombre = $_POST['nombre'] ?? '';
+    $capacidad = $_POST['capacidad'] ?? '';
 
-    try {
-        // Obtener los datos del formulario
-        $nombre = $_POST['nombre'];
-        $capacidad = $_POST['capacidad'];
+    // Validación de campos vacíos
+    if (empty($nombre) || empty($capacidad)) {
+        $error = "Debes rellenar todos los campos.";
+    } else {
+        // Validar si el nombre de la sala ya existe
+        $stmt = $con->prepare("SELECT COUNT(*) FROM salas WHERE nombre = ?");
+        $stmt->execute([$nombre]);
+        $count = $stmt->fetchColumn();
 
-        // Insertar la nueva sala
-        $stmt = $con->prepare("INSERT INTO salas (nombre, capacidad) VALUES (?, ?)");
-        $stmt->execute([$nombre, $capacidad]);
+        if ($count > 0) {
+            $error = "El nombre de la sala ya existe. Por favor, elige otro nombre.";
+        } else {
+            try {
+                $con->beginTransaction(); // Iniciar la transacción
 
-        $con->commit(); // Confirmar transacción
-        $mensaje = 'Sala añadida correctamente.';
-    } catch (PDOException $e) {
-        $con->rollBack(); // Deshacer cambios si ocurre un error
-        $error = 'Error al añadir la sala: ' . $e->getMessage();
+                // Insertar la nueva sala
+                $stmt = $con->prepare("INSERT INTO salas (nombre, capacidad) VALUES (?, ?)");
+                $stmt->execute([$nombre, $capacidad]);
+
+                $con->commit(); // Confirmar transacción
+                $mensaje = 'Sala añadida correctamente.';
+            } catch (PDOException $e) {
+                $con->rollBack(); // Deshacer cambios si ocurre un error
+                $error = 'Error al añadir la sala: ' . $e->getMessage();
+            }
+        }
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -72,12 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         button:hover {
             background-color: #0056b3;
         }
-        .btn-success {
-            background-color: #28a745;
-        }
-        .btn-success:hover {
-            background-color: #218838;
-        }
         .mensaje {
             color: green;
             font-weight: bold;
@@ -93,18 +101,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <h1>Añadir Sala</h1>
 
+    <!-- Mostrar los mensajes de error o éxito -->
     <?php if ($error): ?>
-        <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+        <p class="error"><?php echo htmlspecialchars($error); ?></p>
     <?php endif; ?>
     <?php if ($mensaje): ?>
-        <p style="color:green;"><?= htmlspecialchars($mensaje) ?></p>
+        <p class="mensaje"><?php echo htmlspecialchars($mensaje); ?></p>
     <?php endif; ?>
 
     <form method="POST">
         <label for="nombre">Nombre de la Sala:</label>
-        <input type="text" name="nombre" required><br><br>
+        <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre ?? ''); ?>"><br><br>
+
         <label for="capacidad">Capacidad:</label>
-        <input type="number" name="capacidad" required><br><br>
+        <input type="number" name="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" ><br><br>
 
         <button type="submit">Añadir Sala</button>
     </form>

@@ -106,7 +106,9 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
     <title>Administrar</title>
     <link rel="stylesheet" href="../CSS/crud.css">
 </head>
-<body>
+<body id="bodyGen">
+ <a href="manager_home.php" class="btn btn-success">Volver</a>
+
     <h1>Administrar Recursos</h1>
 
     <form method="POST" action="">
@@ -191,7 +193,7 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
                         <a href="eliminar_mesas.php?tabla=<?= $selected ?>&id=<?= $row['id_mesa'] ?>" onclick="return confirm('¿Estás seguro de eliminar este elemento?')" class="btn btn-danger">Eliminar</a>
                     <?php elseif ($selected === 'sillas'): ?>
                         <a href="editar_sillas.php?id=<?= $row['id_mesa'] ?>" class="btn btn-primary">Editar</a>
-                        <a href="eliminar_sillas.php?tabla=<?= $selected ?>&id=<?= $row['id_mesa'] ?>" onclick="return confirm('¿Estás seguro de eliminar este elemento?')" class="btn btn-danger">Eliminar</a>
+                        <a href="eliminar_sillas.php?tabla=<?= $selected ?>&id=<?= $row['id_mesa'] ?>"  class="btn btn-danger">Eliminar</a>
                     <?php endif; ?>
                 </td>
             </tr>

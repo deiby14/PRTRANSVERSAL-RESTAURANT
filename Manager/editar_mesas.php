@@ -35,6 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $estado = $_POST['estado'];
     $id_sala = $_POST['id_sala'];
 
+    // Validación de campos vacíos
+    if (empty($capacidad) || empty($estado) || empty($id_sala)) {
+        $_SESSION['mensaje'] = "Todos los campos son obligatorios.";
+        header("Location: editar_mesas.php?id=$id_mesa");
+        exit();
+    }
+
+    // Actualizar la mesa
     $stmt = $con->prepare("UPDATE mesas SET capacidad = :capacidad, estado = :estado, id_sala = :id_sala WHERE id_mesa = :id_mesa");
     $stmt->bindParam(':capacidad', $capacidad, PDO::PARAM_INT);
     $stmt->bindParam(':estado', $estado);
@@ -47,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     } else {
         $_SESSION['mensaje'] = "Error al actualizar la mesa.";
+        header("Location: editar_mesas.php?id=$id_mesa");
+        exit();
     }
 }
 ?>
@@ -57,13 +67,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Mesa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .mensaje {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <h1>Editar Mesa</h1>
 
     <form method="POST">
         <label for="capacidad">Capacidad:</label>
-        <input type="number" id="capacidad" name="capacidad" value="<?= htmlspecialchars($mesa['capacidad']) ?>" required>
+        <input type="number" id="capacidad" name="capacidad" value="<?= htmlspecialchars($mesa['capacidad']) ?>">
 
         <label for="estado">Estado:</label>
         <select name="estado" id="estado">
@@ -72,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </select>
 
         <label for="id_sala">Sala:</label>
-        <select name="id_sala" id="id_sala" required>
+        <select name="id_sala" id="id_sala">
             <?php foreach ($salas as $sala): ?>
                 <option value="<?= $sala['id_sala'] ?>" <?= $mesa['id_sala'] == $sala['id_sala'] ? 'selected' : '' ?>><?= htmlspecialchars($sala['nombre']) ?></option>
             <?php endforeach; ?>
@@ -85,9 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <a href="administrar.php" class="btn btn-secondary">Volver</a>
 
     <?php if (isset($_SESSION['mensaje'])): ?>
-        <script>
-            alert('<?= $_SESSION['mensaje'] ?>');
-        </script>
+        <p class="error"><?= $_SESSION['mensaje']; ?></p>
         <?php unset($_SESSION['mensaje']); ?>
     <?php endif; ?>
 </body>

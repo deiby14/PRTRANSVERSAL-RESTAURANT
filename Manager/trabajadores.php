@@ -17,7 +17,7 @@ $trabajadores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Incluye SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
-<body>
+<body id="bodyGen">
     <h1>Gestión de Trabajadores</h1>
     
     <!-- Botones de acciones -->

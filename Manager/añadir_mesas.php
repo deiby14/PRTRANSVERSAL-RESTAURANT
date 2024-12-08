@@ -11,30 +11,34 @@ $error = null;
 $mensaje = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $con->beginTransaction(); // Iniciar la transacción
+    // Obtener los datos del formulario
+    $capacidad = $_POST['capacidad'] ?? '';
+    $estado = $_POST['estado'] ?? '';
+    $id_sala = $_POST['id_sala'] ?? '';
 
-    try {
-        // Obtener los datos del formulario
-        $capacidad = $_POST['capacidad'];
-        $estado = $_POST['estado'];
-        $id_sala = $_POST['id_sala'];
+    // Validación de campos vacíos
+    if (empty($capacidad) || empty($estado) || empty($id_sala)) {
+        $error = "Debes rellenar todos los campos.";
+    } else {
+        try {
+            $con->beginTransaction(); // Iniciar la transacción
 
-        // Insertar la nueva mesa
-        // Como el 'nombre' será el 'id_mesa' incremental, no lo incluimos en el formulario
-        $stmt = $con->prepare("INSERT INTO mesas (capacidad, estado, id_sala) VALUES (?, ?, ?)");
-        $stmt->execute([$capacidad, $estado, $id_sala]);
+            // Insertar la nueva mesa
+            $stmt = $con->prepare("INSERT INTO mesas (capacidad, estado, id_sala) VALUES (?, ?, ?)");
+            $stmt->execute([$capacidad, $estado, $id_sala]);
 
-        $con->commit(); // Confirmar transacción
-        $mensaje = 'Mesa añadida correctamente.';
-    } catch (PDOException $e) {
-        $con->rollBack(); // Deshacer cambios si ocurre un error
-        $error = 'Error al añadir la mesa: ' . $e->getMessage();
+            $con->commit(); // Confirmar transacción
+            $mensaje = 'Mesa añadida correctamente.';
+        } catch (PDOException $e) {
+            $con->rollBack(); // Deshacer cambios si ocurre un error
+            $error = 'Error al añadir la mesa: ' . $e->getMessage();
+        }
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -95,29 +99,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <h1>Añadir Mesa</h1>
 
+    <!-- Mostrar los mensajes de error o éxito -->
     <?php if ($error): ?>
-        <p style="color:red;"><?= htmlspecialchars($error) ?></p>
+        <p class="error"><?php echo htmlspecialchars($error); ?></p>
     <?php endif; ?>
     <?php if ($mensaje): ?>
-        <p style="color:green;"><?= htmlspecialchars($mensaje) ?></p>
+        <p class="mensaje"><?php echo htmlspecialchars($mensaje); ?></p>
     <?php endif; ?>
 
     <form method="POST">
         <label for="capacidad">Capacidad:</label>
-        <input type="number" name="capacidad" required><br><br>
+        <input type="number" name="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" ><br><br>
         
         <label for="estado">Estado:</label>
         <select name="estado">
-            <option value="libre">Libre</option>
-            <option value="ocupada">Ocupada</option>
+            <option value="libre" <?php echo isset($estado) && $estado === 'libre' ? 'selected' : ''; ?>>Libre</option>
+            <option value="ocupada" <?php echo isset($estado) && $estado === 'ocupada' ? 'selected' : ''; ?>>Ocupada</option>
         </select><br><br>
 
         <label for="id_sala">Sala:</label>
-        <select name="id_sala" required>
+        <select name="id_sala">
             <?php
             $stmt = $con->query("SELECT id_sala, nombre FROM salas");
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                echo "<option value=\"{$row['id_sala']}\">{$row['nombre']}</option>";
+                $selected = isset($id_sala) && $id_sala == $row['id_sala'] ? 'selected' : '';
+                echo "<option value=\"{$row['id_sala']}\" $selected>{$row['nombre']}</option>";
             }
             ?>
         </select><br><br>

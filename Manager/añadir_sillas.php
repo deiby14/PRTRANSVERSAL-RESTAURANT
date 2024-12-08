@@ -7,25 +7,66 @@ if (!isset($_SESSION['nombre'])) {
 
 include('../conexion.php'); // Asegúrate de que la ruta sea correcta
 
+// Inicializar el mensaje de error
+$error = '';
+
 // Procesar el formulario si se ha enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $cantidad = $_POST['cantidad'];
-    $id_mesa = $_POST['id_mesa'];
+    $cantidad = $_POST['cantidad'] ?? '';
+    $id_mesa = $_POST['id_mesa'] ?? '';
+    $id_sala = $_POST['id_sala'] ?? '';
 
-    try {
-        $stmt = $con->prepare("INSERT INTO sillas (id_mesa) VALUES (:id_mesa)");
-        $stmt->bindParam(':id_mesa', $id_mesa);
-        for ($i = 0; $i < $cantidad; $i++) {
+    // Verificar si los campos no están vacíos
+    if (empty($cantidad) || empty($id_mesa) || empty($id_sala)) {
+        $error = "Debes de rellenar todos los campos";
+    } elseif ($cantidad < 0) {
+        // Validación para evitar números negativos
+        $error = "La cantidad de sillas no puede ser un número negativo.";
+    } else {
+        // Obtener la capacidad máxima de la mesa y las sillas actuales
+        try {
+            $stmt = $con->prepare("SELECT capacidad FROM mesas WHERE id_mesa = :id_mesa");
+            $stmt->bindParam(':id_mesa', $id_mesa);
             $stmt->execute();
-        }
-        $_SESSION['mensaje'] = 'Las sillas se han añadido correctamente.';
-    } catch (PDOException $e) {
-        $_SESSION['mensaje'] = 'Error: ' . $e->getMessage();
-    }
+            $mesa = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Redirigir de nuevo a esta página para evitar reenvío de formulario
-    header("Location: añadir_sillas.php");
-    exit();
+            if ($mesa) {
+                $capacidad_mesa = $mesa['capacidad'];
+
+                // Obtener el número de sillas actuales en la mesa
+                $stmt = $con->prepare("SELECT COUNT(*) as total_sillas FROM sillas WHERE id_mesa = :id_mesa");
+                $stmt->bindParam(':id_mesa', $id_mesa);
+                $stmt->execute();
+                $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+                $total_sillas = $resultado['total_sillas'];
+
+                // Verificar si la cantidad de sillas que se desea añadir excede la capacidad
+                if (($total_sillas + $cantidad) > $capacidad_mesa) {
+                    $error = "No puedes añadir más sillas de las que permite la capacidad de la mesa.";
+                } else {
+                    // Si no se excede la capacidad, agregar las sillas
+                    try {
+                        $stmt = $con->prepare("INSERT INTO sillas (id_mesa) VALUES (:id_mesa)");
+                        $stmt->bindParam(':id_mesa', $id_mesa);
+                        for ($i = 0; $i < $cantidad; $i++) {
+                            $stmt->execute();
+                        }
+                        $_SESSION['mensaje'] = 'Las sillas se han añadido correctamente.';
+                    } catch (PDOException $e) {
+                        $_SESSION['mensaje'] = 'Error: ' . $e->getMessage();
+                    }
+
+                    // Redirigir de nuevo a esta página para evitar reenvío de formulario
+                    header("Location: añadir_sillas.php");
+                    exit();
+                }
+            } else {
+                $error = "La mesa seleccionada no existe.";
+            }
+        } catch (PDOException $e) {
+            $error = "Error al consultar la capacidad de la mesa: " . $e->getMessage();
+        }
+    }
 }
 
 // Obtener las salas disponibles
@@ -111,12 +152,13 @@ try {
         <p class="mensaje"><?php echo $_SESSION['mensaje']; unset($_SESSION['mensaje']); ?></p>
     <?php endif; ?>
 
-    <form method="POST" action="">
-        <label for="cantidad">Cantidad de Sillas:</label>
-        <input type="number" name="cantidad" placeholder="Cantidad de Sillas" required>
+    <?php if ($error): ?>
+        <p class="error"><?php echo $error; ?></p>
+    <?php endif; ?>
 
+    <form method="POST" action="">
         <label for="id_sala">Selecciona una Sala:</label>
-        <select name="id_sala" id="id_sala" required onchange="filtrarMesas()">
+        <select name="id_sala" id="id_sala" onchange="filtrarMesas()">
             <option value="">Seleccione una sala</option>
             <?php foreach ($salas as $sala): ?>
                 <option value="<?php echo $sala['id_sala']; ?>"><?php echo htmlspecialchars($sala['nombre']); ?> (ID: <?php echo $sala['id_sala']; ?>)</option>
@@ -124,12 +166,15 @@ try {
         </select>
 
         <label for="id_mesa">Selecciona una Mesa:</label>
-        <select name="id_mesa" id="id_mesa" required>
+        <select name="id_mesa" id="id_mesa">
             <option value="">Seleccione una mesa</option>
             <?php foreach ($mesas as $mesa): ?>
                 <option value="<?php echo $mesa['id_mesa']; ?>" data-sala="<?php echo $mesa['id_sala']; ?>">Mesa ID: <?php echo $mesa['id_mesa']; ?>, Capacidad: <?php echo $mesa['capacidad']; ?></option>
             <?php endforeach; ?>
         </select>
+
+        <label for="cantidad">Cantidad de Sillas:</label>
+        <input type="number" name="cantidad" placeholder="Cantidad de Sillas" min="0">
 
         <button type="submit">Añadir Sillas</button>
     </form>
