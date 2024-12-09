@@ -145,6 +145,11 @@ try {
             font-weight: bold;
             text-align: center;
         }
+        .mensaje-error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -174,7 +179,10 @@ try {
         </select>
 
         <label for="cantidad">Cantidad de Sillas:</label>
-        <input type="number" name="cantidad" placeholder="Cantidad de Sillas" min="0">
+        <input type="number" id="cantidad" name="cantidad" placeholder="Cantidad de Sillas" min="0">
+        <span id="error-cantidad" class="mensaje-error"></span>
+        
+
 
         <button type="submit">Añadir Sillas</button>
     </form>
@@ -202,4 +210,6 @@ try {
         }
     </script>
 </body>
+<script src="../Js/validañadirsillas.js"></script>
+
 </html>

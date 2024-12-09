@@ -84,11 +84,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Sillas</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
         .mensaje {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+        }
+        .mensaje-error {
             color: red;
             font-weight: bold;
             text-align: center;
         }
+    
     </style>
 </head>
 <body>
@@ -100,7 +146,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" action="">
         <label for="total_sillas">Número de Sillas:</label>
-        <input type="number" name="total_sillas" value="<?php echo isset($total_sillas) ? $total_sillas : 0; ?>">
+        <input type="number" id="total_sillas" name="total_sillas" value="<?php echo isset($total_sillas) ? $total_sillas : 0; ?>">
+        <span id="error-sillas" class="mensaje-error"></span>
+
 
         <button type="submit">Actualizar Sillas</button>
     </form>
@@ -110,4 +158,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </a>
 
 </body>
+<script src="../Js/validaeditarsillas.js"></script>
 </html>

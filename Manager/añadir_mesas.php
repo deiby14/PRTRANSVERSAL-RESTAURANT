@@ -109,7 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST">
         <label for="capacidad">Capacidad:</label>
-        <input type="number" name="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" ><br><br>
+        <input type="number" id="capacidad"  value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" ><br><br>
+        <span id="error-capacidad" class="error"></span>
+
         
         <label for="estado">Estado:</label>
         <select name="estado">
@@ -134,4 +136,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <br>
     <a href="administrar.php">Volver</a>
 </body>
+<script src="../Js/validañadirmesas"></script>
 </html>

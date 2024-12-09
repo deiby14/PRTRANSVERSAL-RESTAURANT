@@ -98,10 +98,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
         }
         .error {
-            color: red;
-            font-weight: bold;
-            text-align: center;
-        }
+    color: red;
+    font-weight: bold;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block; /* Asegúrate de que se muestre */
+}
+
     </style>
 </head>
 <body>
@@ -117,6 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="editar.php?id_usuario=<?= $trabajador['id_usuario'] ?>" method="POST">
         <label for="nombre_completo">Nombre Completo</label>
         <input type="text" name="nombre_completo" id="nombre_completo" value="<?= htmlspecialchars($trabajador['nombre_completo']) ?>">
+        <span id="error-nombre" class="error"></span>
+
 
         <label for="tipo_usuario">Tipo de Usuario</label>
         <select name="tipo_usuario" id="tipo_usuario">
@@ -134,4 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <a href="trabajadores.php">Volver</a>
 </body>
+<script src="../Js/validaeditar.js"></script>
+
 </html>

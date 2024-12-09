@@ -126,6 +126,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <label for="capacidad">Capacidad:</label>
         <input type="number" id="capacidad" name="capacidad" value="<?= htmlspecialchars($mesa['capacidad']) ?>">
+        <span id="error-capacidad" class="error"></span>
+
 
         <label for="estado">Estado:</label>
         <select name="estado" id="estado">
@@ -151,4 +153,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php unset($_SESSION['mensaje']); ?>
     <?php endif; ?>
 </body>
+<script src="../Js/validaeditarmesas.js"></script>
 </html>

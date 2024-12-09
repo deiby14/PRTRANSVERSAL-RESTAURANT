@@ -1,5 +1,4 @@
 // Validar nombre completo
-console.log("Archivo JavaScript cargado correctamente");
 
 document.getElementById("nombre_completo").onblur = function() {
     validaNombre();

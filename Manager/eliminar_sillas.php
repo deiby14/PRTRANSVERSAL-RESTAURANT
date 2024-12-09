@@ -126,6 +126,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: bold;
             text-align: center;
         }
+        .mensaje-error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
     </style>
     </style>
 </head>
@@ -141,11 +146,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p><strong>Sillas Totales:</strong> <?= $total_sillas ?></p>
         <label for="cantidad">Cantidad a eliminar:</label>
         <input type="number" id="cantidad" name="cantidad">
+        <span id="error-silla" class="mensaje-error"></span>
+
         <input type="hidden" name="id_mesa" value="<?= $id_mesa ?>">
+
         <button type="submit" class="btn btn-danger">Eliminar</button>
         <a href="administrar.php" class="btn-success:hover">Volver</a>
 
 
     </form>
+    <script src="../Js/validaeliminarsilla.js"></script>
 </body>
 </html>
