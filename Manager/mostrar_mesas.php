@@ -1,24 +1,34 @@
 <?php
 session_start();
+include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
+
+// Verificar que el usuario esté logueado
 if (!isset($_SESSION['nombre'])) {
     header("Location: ../index.php");
     exit();
 }
 
-include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
+// Obtener el id_sala desde la URL
+$id_sala = isset($_GET['id_sala']) ? (int)$_GET['id_sala'] : 0;
+if ($id_sala <= 0) {
+    echo "Sala no válida";
+    exit();
+}
 
-// Aquí corregimos la consulta para usar 'id_sala' en lugar de 'comedor_id'
-$result = $con->query("SELECT * FROM mesas WHERE id_sala = 3"); // Comedor 1 tiene id_sala = 4
+// Obtener las mesas asociadas a esta sala
+$stmtMesas = $con->prepare("SELECT * FROM mesas WHERE id_sala = :id_sala");
+$stmtMesas->execute(['id_sala' => $id_sala]);
+$mesas = $stmtMesas->fetchAll();
+
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comedor 1</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Mesas de la Sala</title>
     <link rel="stylesheet" href="../CSS/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.0/mdb.min.css" rel="stylesheet">
     <!-- Bootstrap JS (y dependencias) -->
@@ -78,7 +88,7 @@ $result = $con->query("SELECT * FROM mesas WHERE id_sala = 3"); // Comedor 1 tie
     </style>
 </head>
 
-<body id="bodyGen">
+<body>
     <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
         <div class="container">
             <a href="./manager_home.php" data-bs-toggle="collapse" data-bs-target="#navbarButtonsExample" aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,44 +104,39 @@ $result = $con->query("SELECT * FROM mesas WHERE id_sala = 3"); // Comedor 1 tie
                     <h4>Bienvenid@ <?php echo htmlspecialchars($_SESSION['nombre']); ?></h4>
                 </div>
                 <div class="d-flex align-items-center">
-                    <a href="../CerrarSesion.php" class="btn btn-primary me-3">
-                        Cerrar sesión
-                    </a>
-                    <button id="volverBtn" class="btn btn-secondary">Volver</button>
+                    <a href="../CerrarSesion.php" class="btn btn-primary me-3">Cerrar sesión</a>
+                    <a href="trabajadores.php" class="btn btn-primary me-3">Trabajadores</a>
+                    <a href="./historial.php" class="btn btn-secondary me-3">Ver Historial</a>
+                    <a href="./manager_home.php" class="btn btn-secondary">Volver</a>
+                    <a href="administrar.php" class="btn btn-secondary">Administrar</a>
                 </div>
             </div>
         </div>
     </nav>
 
+    <h1>Mesas de la Sala</h1>
     <div class="mesas-container">
         <?php
-        while ($mesa = $result->fetch(PDO::FETCH_ASSOC)) {
-            echo '<div class="mesa-container-item">'; // Contenedor para mesa y estado
-
-            // Rectángulo con estado
+        // Mostrar las mesas de esta sala
+        foreach ($mesas as $mesa) {
+            echo '<div class="mesa-container-item">';
             echo '<div class="estado-rectangulo ' . ($mesa['estado'] == 'ocupada' ? 'ocupada' : 'libre') . '">';
-            echo '<a href="gestionar_mesa.php?id_mesa=' . htmlspecialchars($mesa['id_mesa']) . '&estado=' . htmlspecialchars($mesa['estado']) . '" style="text-decoration: none; color: inherit;">';
+            echo '<a href="gestionar_mesa.php?id_mesa=' . $mesa['id_mesa'] . '&estado=' . $mesa['estado'] . '&id_sala=' . $id_sala . '">';
             echo '<span>' . htmlspecialchars($mesa['estado']) . '</span>';
             echo '</a>';
-            echo '</div>'; // Cierre del rectángulo de estado
-
-            // Información de la mesa
+            echo '</div>';
             echo '<div class="mesa">';
             echo '<h3 class="mesa-id">Mesa: ' . htmlspecialchars($mesa['id_mesa']) . '</h3>';
             echo '<p class="mesa-capacidad">Capacidad: ' . htmlspecialchars($mesa['capacidad']) . ' personas</p>';
-            echo '</div>'; // Cierre de la información de la mesa
-
-            echo '</div>'; // Cierre del contenedor de mesa
+            echo '</div>';
+            echo '</div>';
         }
         ?>
     </div>
 
-    <script src="../Js/volver.js"></script>
-   
 </body>
-
 </html>
 
 <?php
-$con = null; // Cerramos la conexión PDO
+$con = null; // Cerrar la conexión
 ?>

@@ -1,17 +1,37 @@
 <?php
 session_start();
+include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
+
+// Verificar que el usuario esté logueado
 if (!isset($_SESSION['nombre'])) {
     header("Location: ../index.php");
     exit();
 }
+
+// Obtener el tipo de usuario para asegurarse de que solo el manager pueda acceder
+$camareroActual = $_SESSION['id_usuario'];
+$stmtComprobar = $con->prepare("SELECT tipo_usuario FROM usuarios WHERE id_usuario = :id_usuario");
+$stmtComprobar->execute(['id_usuario' => $camareroActual]);
+$tipoUsuario = $stmtComprobar->fetchColumn();
+
+if ($tipoUsuario != "camarero") {
+    header('Location: camarero_home.php');
+    exit();
+}
+
+// Obtener todas las salas desde la base de datos
+$stmtSalas = $con->query("SELECT * FROM salas");
+$salas = $stmtSalas->fetchAll();
+
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camarero</title>
+    <title>Manager</title>
     <link rel="stylesheet" href="../CSS/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.0/mdb.min.css" rel="stylesheet">
     <!-- Bootstrap JS (y dependencias) -->
@@ -36,121 +56,29 @@ if (!isset($_SESSION['nombre'])) {
                     <h4>Bienvenid@ <?php echo htmlspecialchars($_SESSION['nombre']); ?></h4>
                 </div>
                 <div class="d-flex align-items-center">
-                    <a href="../CerrarSesion.php" class="btn btn-primary me-3">
-                        Cerrar sesión
-                    </a>
-                    <a href="./camarero_home.php" class="btn btn-secondary">Volver</a>
-                    <a href="form_reservas.php" class="btn btn-secondary">Reservas</a>
+                    <a href="../CerrarSesion.php" class="btn btn-primary me-3">Cerrar sesión</a>
+                    <a href="camarero_home.php" class="btn btn-secondary">Volver</a>
+                    <a href="form_reservas.php" class="btn btn-secondary">Hacer reservas</a>
                 </div>
             </div>
         </div>
     </nav>
-    <div id="ocultarImg" class="">
-        <div class="column-1">
-            <h1 id="h1Sel">Seleccionar sala</h1>
-            <div class="image-containerMan">
-                <a href="" id="Comedor">
-                    <h3 class="text-overlay Comedor">Comedor</h3>
-                    <img class="imgMan Comedor" src="../img/ComedorBtn.jpg" alt="Comedor">
-                </a>
-            </div>
-            <div class="image-containerMan">
-                <a href="" id="Privada">
-                    <h3 class="text-overlay Privada">Privada</h3>
-                    <img class="imgMan Privada" src="../img/PrivadaBtn.png" alt="Privada">
-                </a>
-            </div>
-            <div class="image-containerMan">
-                <a href="" id="Terraza">
-                    <h3 class="text-overlay Terraza">Terraza</h3>
-                    <img class="imgMan Terraza" src="../img/TerrazaBtn.png" alt="Terraza">
-                </a>
-            </div>
-        </div>
-    </div>
-    <!-- Mostrar Comedores -->
 
-    <div id="Comedores" class="content">
-        <div class="column-1 flex">
-            <div>
-                <h1 id="h1Sel">Seleccionar Comedor</h1>
-                <div class="image-containerMan">
-                    <a href="comedor1.php" id="Comedor">
-                        <h3 class="text-overlay Comedor">Comedor 1</h3>
-                        <img class="imgComedor" src="../img/Comedores.png" alt="Comedor">
-                    </a>
-                </div>
-                <div class="image-containerMan">
-                    <a href="comedor2.php" id="Privada">
-                        <h3 class="text-overlay Privada">Comedor 2</h3>
-                        <img class="imgComedor" src="../img/Comedores.png" alt="Privada">
-                    </a>
-                </div>
-            </div>
-
-        </div>
+    <h1>Seleccionar Sala</h1>
+    <div class="salas-container">
+        <?php
+        // Mostrar las salas dinámicamente
+        foreach ($salas as $sala) {
+            echo '<div class="sala-item">';
+            echo '<a href="../Manager/mostrar_mesas.php?id_sala=' . $sala['id_sala'] . '">' . htmlspecialchars($sala['nombre']) . '</a>';
+            echo '</div>';
+        }
+        ?>
     </div>
-    <!-- Mostrar Salas Privadas -->
-    <div id="Privadas" class="content">
-        <div class="column-1">
-            <h1 id="h1Sel">Seleccionar Sala Privada</h1>
-            <div class="flex">
-                <div class="image-containerMan">
-                    <a href="privada1.php" id="Comedor">
-                        <h3 class="text-overlay Comedor">Privada 1</h3>
-                        <img class="imgSalaPriv" src="../img/SalasPrivadas.png" alt="Comedor">
-                    </a>
-                </div>
-                <div class="image-containerMan">
-                    <a href="privada2.php" id="Privada">
-                        <h3 class="text-overlay Privada">Privada 2</h3>
-                        <img class="imgSalaPriv" src="../img/SalasPrivadas.png" alt="Privada">
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="column-1 flex">
-            <div class="image-containerMan">
-                <a href="privada3.php" id="Terraza">
-                    <h3 class="text-overlay Terraza">Privada 3</h3>
-                    <img class="imgSalaPriv" src="../img/SalasPrivadas.png" alt="Terraza">
-                </a>
-            </div>
-            <div class="image-containerMan">
-                <a href="privada4.php" id="Terraza">
-                    <h3 class="text-overlay Terraza">Privada 4</h3>
-                    <img class="imgSalaPriv" src="../img/SalasPrivadas.png" alt="Terraza">
-                </a>
-            </div>
-        </div>
-    </div>
-    <!-- Mostrar Terrazas -->
-    <div id="Terrazas" class="content">
-        <div class="column-1">
-            <h1 id="h1Sel">Seleccionar Terraza</h1>
-            <div class="image-containerMan">
-                <a href="terraza1.php" id="Comedor">
-                    <h3 class="text-overlay Comedor">Terraza 1</h3>
-                    <img class="imgTerraza" src="../img/Terrazas.png" alt="Comedor">
-                </a>
-            </div>
-            <div class="image-containerMan">
-                <a href="terraza2.php" id="Privada">
-                    <h3 class="text-overlay Privada">Terraza 2</h3>
-                    <img class="imgTerraza" src="../img/Terrazas.png" alt="Privada">
-                </a>
-            </div>
-            <div class="image-containerMan">
-                <a href="terraza3.php" id="Terraza">
-                    <h3 class="text-overlay Terraza">Terraza 3</h3>
-                    <img class="imgTerraza" src="../img/Terrazas.png" alt="Terraza">
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <script src="../Js/MostMesas.js"></script>
 
 </body>
-
 </html>
+
+<?php
+$con = null; // Cerrar la conexión
+?>

@@ -47,9 +47,8 @@ $result = $con->query($query);
                     <h4>Bienvenid@ <?php echo htmlspecialchars($_SESSION['nombre']); ?></h4>
                 </div>
                 <div class="d-flex align-items-center">
-                    <a href="../CerrarSesion.php" class="btn btn-primary me-3">
-                        Cerrar sesión
-                    </a>
+                    <a href="../CerrarSesion.php" class="btn btn-primary me-3">Cerrar sesión</a>
+                    <a href="ver_reservas.php" class="btn btn-primary me-3">Ver reservas</a>
                     <a href="./camarero_home.php" class="btn btn-secondary">Volver</a>
                 </div>
             </div>
@@ -91,11 +90,9 @@ $result = $con->query($query);
             <button type="submit" class="btn btn-primary">Reservar Mesa</button>
         </form>
         <br>
-        <button type="" class="btn btn-primary">Ver reservas</button>
        
     </div>
     <br>
-    <button type="" class="btn btn-primary">Ver reservas</button>
 
     <script>
         // Aquí puedes agregar más scripts si es necesario

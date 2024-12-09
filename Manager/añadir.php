@@ -114,16 +114,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form action="añadir.php" method="post">
         <label for="nombre_completo">Nombre Completo</label>
-        <input type="text" id="nombre_completo" name="nombre_completo" required>
+        <input type="text" id="nombre_completo" name="nombre_completo">
 
         <label for="contrasena">Contraseña</label>
-        <input type="password" id="contrasena" name="contrasena" required>
+        <input type="password" id="contrasena" name="contrasena">
 
         <label for="repetir_contrasena">Repetir Contraseña</label>
-        <input type="password" id="repetir_contrasena" name="repetir_contrasena" required>
+        <input type="password" id="repetir_contrasena" name="repetir_contrasena" >
 
         <label for="tipo_usuario">Tipo de Usuario</label>
-        <select id="tipo_usuario" name="tipo_usuario" required>
+        <select id="tipo_usuario" name="tipo_usuario" >
             <option value="camarero">Camarero</option>
             <option value="manager">Manager</option>
             <option value="mantenimiento">Mantenimiento</option>
