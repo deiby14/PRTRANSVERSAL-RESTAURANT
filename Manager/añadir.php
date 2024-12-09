@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Añadir Trabajador</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -99,10 +100,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
         }
         .error {
-            color: red;
-            font-weight: bold;
-            text-align: center;
-        }
+    color: red;
+    font-weight: bold;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block; /* Asegúrate de que se muestre */
+}
+
     </style>
 </head>
 <body>
@@ -115,23 +119,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form action="añadir.php" method="post">
         <label for="nombre_completo">Nombre Completo</label>
         <input type="text" id="nombre_completo" name="nombre_completo">
+        <span id="error-nombre" class="error"></span>
 
         <label for="contrasena">Contraseña</label>
         <input type="password" id="contrasena" name="contrasena">
+        <span id="error-contrasena" class="error"></span>
 
         <label for="repetir_contrasena">Repetir Contraseña</label>
-        <input type="password" id="repetir_contrasena" name="repetir_contrasena" >
+        <input type="password" id="repetir_contrasena" name="repetir_contrasena">
+        <span id="error-confirmar" class="error"></span>
 
         <label for="tipo_usuario">Tipo de Usuario</label>
-        <select id="tipo_usuario" name="tipo_usuario" >
+        <select id="tipo_usuario" name="tipo_usuario">
             <option value="camarero">Camarero</option>
             <option value="manager">Manager</option>
             <option value="mantenimiento">Mantenimiento</option>
         </select>
+        <span id="error-tipo-usuario" class="error"></span>
 
         <button type="submit">Añadir Trabajador</button>
     </form>
 
     <a href="trabajadores.php" class="btn btn-success">Volver</a>
 </body>
+<body>
+    <!-- Tu contenido HTML -->
+    <script src="../Js/validañadir.js"></script>
+</body>
+
 </html>
