@@ -86,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Sala</title>
+    <link rel="stylesheet" href="../CSS/styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -139,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-<body>
+<body id="bodyGen">
     <h1>Editar Sala</h1>
 
     <form method="POST" enctype="multipart/form-data">

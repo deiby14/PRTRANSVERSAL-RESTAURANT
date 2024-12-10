@@ -143,14 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </style>
 </head>
 
-<body onload="updateHourOptions()">
-    <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
-        <div class="container">
-            <a href="./manager_home.php" class="navbar-brand">
-                <img id="LogoNav" src="../img/LOGO-REST.png" alt="Logo" />
-            </a>
-        </div>
-    </nav>
+<body id="bodyGen" onload="updateHourOptions()">
+   
 
     <div class="container">
         <h1>Realizar Reserva para la Mesa <?php echo htmlspecialchars($id_mesa); ?></h1>

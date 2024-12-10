@@ -83,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Sillas</title>
+    <link rel="stylesheet" href="../CSS/styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -137,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     </style>
 </head>
-<body>
+<body id="bodyGen">
     <?php if (isset($_SESSION['mensaje'])): ?>
         <p class="mensaje"><?php echo $_SESSION['mensaje']; unset($_SESSION['mensaje']); ?></p>
     <?php endif; ?>
@@ -153,9 +154,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Actualizar Sillas</button>
     </form>
 
-    <a href="administrar.php">
-        <button type="button">Volver a Administrar</button>
-    </a>
+    <a href="administrar.php">Volver</a>
+
 
 </body>
 <script src="../Js/validaeditarsillas.js"></script>

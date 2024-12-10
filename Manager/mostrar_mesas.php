@@ -96,7 +96,7 @@ $horaActual = date('Y-m-d H:i:s');
     </style>
 </head>
 
-<body>
+<body id="bodyGen">
     <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
         <div class="container">
             <a href="./manager_home.php" data-bs-toggle="collapse" data-bs-target="#navbarButtonsExample" aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
