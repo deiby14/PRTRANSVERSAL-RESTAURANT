@@ -191,10 +191,10 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
                     <!-- Enlace para editar según el tipo -->
                     <?php if ($selected === 'salas'): ?>
                         <a href="editar_salas.php?id=<?= $row['id_sala'] ?>" class="btn btn-primary">Editar</a>
-                        <a href="eliminar_salas.php?tabla=<?= $selected ?>&id=<?= $row['id_sala'] ?>" onclick="return confirm('¿Estás seguro de eliminar este elemento?')" class="btn btn-danger">Eliminar</a>
+                        <a href="eliminar_salas.php?tabla=<?= $selected ?>&id=<?= $row['id_sala'] ?>" class="btn btn-danger">Eliminar</a>
                     <?php elseif ($selected === 'mesas'): ?>
                         <a href="editar_mesas.php?id=<?= $row['id_mesa'] ?>" class="btn btn-primary">Editar</a>
-                        <a href="eliminar_mesas.php?tabla=<?= $selected ?>&id=<?= $row['id_mesa'] ?>" onclick="return confirm('¿Estás seguro de eliminar este elemento?')" class="btn btn-danger">Eliminar</a>
+                        <a href="eliminar_mesas.php?tabla=<?= $selected ?>&id=<?= $row['id_mesa'] ?>" class="btn btn-danger">Eliminar</a>
                     <?php elseif ($selected === 'sillas'): ?>
                         <a href="editar_sillas.php?id=<?= $row['id_mesa'] ?>" class="btn btn-primary">Editar</a>
                         <a href="eliminar_sillas.php?tabla=<?= $selected ?>&id=<?= $row['id_mesa'] ?>"  class="btn btn-danger">Eliminar</a>

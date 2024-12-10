@@ -19,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verificar si los campos no están vacíos
     if (empty($cantidad) || empty($id_mesa) || empty($id_sala)) {
         $error = "Debes de rellenar todos los campos";
-    } elseif ($cantidad < 0) {
+    } elseif ($cantidad < 1 || $cantidad> 30) {
         // Validación para evitar números negativos
-        $error = "La cantidad de sillas no puede ser un número negativo.";
+        $error = "La cantidad de sillas debe ser entre 1 y 30 .";
     } else {
         // Obtener la capacidad máxima de la mesa y las sillas actuales
         try {

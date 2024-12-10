@@ -41,7 +41,6 @@ if (isset($_GET['tabla']) && isset($_GET['id'])) {
         }
 
         // Establecer mensaje de éxito
-        $_SESSION['mensaje'] = 'Elemento eliminado correctamente.';
     } catch (PDOException $e) {
         // En caso de error, mostrar el mensaje
         $_SESSION['mensaje'] = 'Error al eliminar: ' . $e->getMessage();

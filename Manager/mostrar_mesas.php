@@ -18,10 +18,16 @@ if ($id_sala <= 0) {
     exit();
 }
 
-// Obtener las mesas asociadas a esta sala
-$stmtMesas = $con->prepare("SELECT * FROM mesas WHERE id_sala = :id_sala");
+// Obtener las mesas y el número de sillas asociadas a cada mesa
+$stmtMesas = $con->prepare("
+    SELECT mesas.id_mesa, IFNULL(COUNT(sillas.id_silla), 0) AS total_sillas
+    FROM mesas
+    LEFT JOIN sillas ON sillas.id_mesa = mesas.id_mesa
+    WHERE mesas.id_sala = :id_sala
+    GROUP BY mesas.id_mesa
+");
 $stmtMesas->execute(['id_sala' => $id_sala]);
-$mesas = $stmtMesas->fetchAll();
+$mesas = $stmtMesas->fetchAll(PDO::FETCH_ASSOC);
 
 // Verificar las reservas existentes para cada mesa
 $horaActual = date('Y-m-d H:i:s');
@@ -139,7 +145,7 @@ $horaActual = date('Y-m-d H:i:s');
             echo '<div class="mesa-container-item">';
             echo '<div class="mesa">';
             echo '<h3 class="mesa-id">Mesa: ' . htmlspecialchars($mesa['id_mesa']) . '</h3>';
-            echo '<p class="mesa-capacidad">Capacidad: ' . htmlspecialchars($mesa['capacidad']) . ' personas</p>';
+            echo '<p class="mesa-capacidad">Sillas: ' . htmlspecialchars($mesa['total_sillas']) . '</p>';
             echo '</div>';
             
             // Enlace para reservar la mesa
