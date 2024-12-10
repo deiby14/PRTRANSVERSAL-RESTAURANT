@@ -140,6 +140,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         .reservas-existentes button {
             margin-left: 10px; /* Añade un margen izquierdo a los botones */
         }
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -161,20 +166,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="POST">
             <div class="mb-3">
                 <label for="nombre_reserva" class="form-label">Nombre de la Reserva</label>
-                <input type="text" class="form-control" id="nombre_reserva" name="nombre_reserva" required>
+                <input type="text" class="form-control" id="nombre_reserva" name="nombre_reserva">
+                <span id="error-nombre" class="error"></span>
+
             </div>
 
             <div class="mb-3">
                 <label for="fecha_reserva" class="form-label">Fecha de la Reserva</label>
-                <input type="date" class="form-control" id="fecha_reserva" name="fecha_reserva" min="<?php echo date('Y-m-d'); ?>" onchange="updateHourOptions()" required onkeydown="return false;">
+                <input type="date" class="form-control" id="fecha_reserva" name="fecha_reserva" min="<?php echo date('Y-m-d'); ?>" onchange="updateHourOptions()" onkeydown="return false;">
             </div>
 
             <div class="mb-3">
                 <label for="hora_inicio" class="form-label">Hora de Inicio</label>
-                <select class="form-control" id="hora_inicio" name="hora_inicio" required>
+                <select class="form-control" id="hora_inicio" name="hora_inicio">
                     <?php
-                    for ($h = 0; $h < 24; $h++) {
+                    for ($h = 9; $h <= 23; $h++) {
                         for ($m = 0; $m < 60; $m += 30) {
+                            if ($h === 9 && $m < 30) continue; // Comenzar desde 9:30
                             $hora = sprintf('%02d:%02d', $h, $m);
                             echo '<option value="' . $hora . '">' . $hora . '</option>';
                         }
@@ -185,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <div class="mb-3">
                 <label for="hora_fin" class="form-label">Hora de Fin</label>
-                <select class="form-control" id="hora_fin" name="hora_fin" required>
+                <select class="form-control" id="hora_fin" name="hora_fin">
                     <?php
                     for ($h = 0; $h < 24; $h++) {
                         for ($m = 0; $m < 60; $m += 30) {
@@ -245,6 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 
 </body>
+<script src="../Js/validareservas.css"></script>
 </html>
 
 <?php

@@ -126,13 +126,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" enctype="multipart/form-data">
         <label for="nombre">Nombre de la Sala:</label>
-        <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre ?? ''); ?>"><br><br>
+        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($nombre ?? ''); ?>"><br><br>
+        <span id="error-nombre" class="error"></span>
+
 
         <label for="capacidad">Capacidad:</label>
-        <input type="number" name="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>"><br><br>
+        <input type="number" id="capacidad" name="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>"><br><br>
+        <span id="error-capacidad" class="error"></span>
+
 
         <label for="imagen">Imagen de la Sala:</label>
-        <input type="file" name="imagen" accept="image/*" required><br><br>
+        <input type="file" id="imagen"  name="imagen" accept="image/*"><br><br>
 
         <button type="submit">Añadir Sala</button>
     </form>
@@ -140,4 +144,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <br>
     <a href="administrar.php">Volver</a>
 </body>
+<script src="../Js/validañadirsalas.js"></script>
 </html>

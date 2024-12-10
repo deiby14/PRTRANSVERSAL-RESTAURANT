@@ -18,19 +18,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validación de campos vacíos
     if (empty($capacidad) || empty($id_sala)) {
         $error = "Debes rellenar todos los campos.";
+    } elseif ($capacidad < 6 || $capacidad > 30) {
+        $error = "La capacidad debe estar entre 6 y 30.";
     } else {
-        try {
-            $con->beginTransaction(); // Iniciar la transacción
+        // Verificar el número de mesas en la sala
+        $stmt = $con->prepare("SELECT COUNT(*) FROM mesas WHERE id_sala = ?");
+        $stmt->execute([$id_sala]);
+        $numMesas = $stmt->fetchColumn();
 
-            // Insertar la nueva mesa
-            $stmt = $con->prepare("INSERT INTO mesas (capacidad, id_sala) VALUES (?, ?)");
-            $stmt->execute([$capacidad, $id_sala]);
+        if ($numMesas >= 5) {
+            $error = "La sala ya tiene el máximo de 5 mesas.";
+        } else {
+            try {
+                $con->beginTransaction(); // Iniciar la transacción
 
-            $con->commit(); // Confirmar transacción
-            $mensaje = 'Mesa añadida correctamente.';
-        } catch (PDOException $e) {
-            $con->rollBack(); // Deshacer cambios si ocurre un error
-            $error = 'Error al añadir la mesa: ' . $e->getMessage();
+                // Insertar la nueva mesa
+                $stmt = $con->prepare("INSERT INTO mesas (capacidad, id_sala) VALUES (?, ?)");
+                $stmt->execute([$capacidad, $id_sala]);
+
+                $con->commit(); // Confirmar transacción
+                $mensaje = 'Mesa añadida correctamente.';
+            } catch (PDOException $e) {
+                $con->rollBack(); // Deshacer cambios si ocurre un error
+                $error = 'Error al añadir la mesa: ' . $e->getMessage();
+            }
         }
     }
 }
@@ -109,7 +120,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST">
         <label for="capacidad">Capacidad:</label>
-        <input type="number" name="capacidad" id="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" required><br><br>
+        <input type="number" name="capacidad" id="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" ><br><br>
+        <span id="error-capacidad" class="error"></span>
+
 
         <label for="id_sala">Sala:</label>
         <select name="id_sala" required>
@@ -128,5 +141,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <br>
     <a href="administrar.php">Volver</a>
 </body>
-<script src="../Js/validañadirmesas"></script>
+<script src="../Js/validañadirmesas.js"></script>
 </html>

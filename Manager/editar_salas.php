@@ -146,12 +146,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST" enctype="multipart/form-data">
         <label for="nombre">Nombre de la sala:</label>
         <input type="text" id="nombre" name="nombre" value="<?= htmlspecialchars($sala['nombre']) ?>" >
+        <span id="error-nombre" class="error"></span>
+
 
         <label for="capacidad">Capacidad:</label>
         <input type="number" id="capacidad" name="capacidad" value="<?= htmlspecialchars($sala['capacidad']) ?>">
+        <span id="error-capacidad" class="error"></span>
+
 
         <label for="imagen">Imagen de la Sala:</label>
-        <input type="file" name="imagen" accept="image/*"><br>
+        <input type="file" id="imagen" name="imagen" accept="image/*"><br>
         <img src="<?= htmlspecialchars($sala['imagen'] ?? '') ?>" alt="Imagen de la Sala" style="max-width: 100px;">
 
         <button type="submit" class="btn btn-primary">Actualizar Sala</button>
@@ -165,4 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php unset($_SESSION['mensaje']); ?>
     <?php endif; ?>
 </body>
+<script src="../Js/validaeditarsalas.js"></script>
+
 </html>
