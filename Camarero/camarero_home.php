@@ -58,7 +58,6 @@ $salas = $stmtSalas->fetchAll();
                 <div class="d-flex align-items-center">
                     <a href="../CerrarSesion.php" class="btn btn-primary me-3">Cerrar sesión</a>
                     <a href="camarero_home.php" class="btn btn-secondary">Volver</a>
-                    <a href="form_reservas.php" class="btn btn-secondary">Hacer reservas</a>
                 </div>
             </div>
         </div>
@@ -70,7 +69,7 @@ $salas = $stmtSalas->fetchAll();
         // Mostrar las salas dinámicamente
         foreach ($salas as $sala) {
             echo '<div class="sala-item">';
-            echo '<a href="../Manager/mostrar_mesas.php?id_sala=' . $sala['id_sala'] . '">' . htmlspecialchars($sala['nombre']) . '</a>';
+            echo '<a href="mostrar_mesas.php?id_sala=' . $sala['id_sala'] . '">' . htmlspecialchars($sala['nombre']) . '</a>';
             echo '</div>';
         }
         ?>
