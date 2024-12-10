@@ -19,17 +19,17 @@ if (isset($_GET['tabla']) && isset($_GET['id'])) {
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
         } elseif ($tabla === 'mesas') {
-            // Primero, eliminar las reservas que hacen referencia a la mesa
+            // Primero, eliminar las sillas que hacen referencia a la mesa
+            $stmt = $con->prepare("DELETE FROM sillas WHERE id_mesa = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Luego, eliminar las reservas que hacen referencia a la mesa
             $stmt = $con->prepare("DELETE FROM reservas WHERE id_mesa = :id");
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
-            // Eliminar las ocupaciones asociadas a la mesa
-            $stmt = $con->prepare("DELETE FROM ocupaciones WHERE id_mesa = :id");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-
-            // Luego, eliminar la mesa
+            // Finalmente, eliminar la mesa
             $stmt = $con->prepare("DELETE FROM mesas WHERE id_mesa = :id");
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();

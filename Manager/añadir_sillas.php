@@ -81,7 +81,7 @@ try {
 // Obtener las mesas disponibles
 $mesas = [];
 try {
-    $stmt = $con->query("SELECT id_mesa, capacidad, estado, id_sala FROM mesas");
+    $stmt = $con->query("SELECT id_mesa, capacidad, id_sala FROM mesas");
     $mesas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo "Error al obtener mesas: " . $e->getMessage();
@@ -166,7 +166,7 @@ try {
         <select name="id_sala" id="id_sala" onchange="filtrarMesas()">
             <option value="">Seleccione una sala</option>
             <?php foreach ($salas as $sala): ?>
-                <option value="<?php echo $sala['id_sala']; ?>"><?php echo htmlspecialchars($sala['nombre']); ?> (ID: <?php echo $sala['id_sala']; ?>)</option>
+                <option value="<?php echo $sala['id_sala']; ?>"><?php echo htmlspecialchars($sala['nombre']); ?></option>
             <?php endforeach; ?>
         </select>
 
@@ -174,7 +174,7 @@ try {
         <select name="id_mesa" id="id_mesa">
             <option value="">Seleccione una mesa</option>
             <?php foreach ($mesas as $mesa): ?>
-                <option value="<?php echo $mesa['id_mesa']; ?>" data-sala="<?php echo $mesa['id_sala']; ?>">Mesa ID: <?php echo $mesa['id_mesa']; ?>, Capacidad: <?php echo $mesa['capacidad']; ?></option>
+                <option value="<?php echo $mesa['id_mesa']; ?>" data-sala="<?php echo $mesa['id_sala']; ?>">Mesa: <?php echo $mesa['id_mesa']; ?>, Capacidad: <?php echo $mesa['capacidad']; ?></option>
             <?php endforeach; ?>
         </select>
 

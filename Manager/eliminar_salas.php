@@ -22,10 +22,6 @@ if (isset($_GET['tabla']) && isset($_GET['id'])) {
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
 
-            // Eliminar las ocupaciones relacionadas con las mesas de la sala
-            $stmt = $con->prepare("DELETE FROM ocupaciones WHERE id_mesa IN (SELECT id_mesa FROM mesas WHERE id_sala = :id)");
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
 
             // Eliminar las sillas asociadas a las mesas de la sala
             $stmt = $con->prepare("DELETE FROM sillas WHERE id_mesa IN (SELECT id_mesa FROM mesas WHERE id_sala = :id)");

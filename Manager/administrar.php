@@ -25,7 +25,7 @@ if (isset($_POST['sala'])) {
 // Obtener las mesas disponibles
 $mesas = [];
 try {
-    $stmt = $con->query("SELECT id_mesa, nombre FROM mesas JOIN salas ON mesas.id_sala = salas.id_sala WHERE mesas.estado = 'libre'");
+    $stmt = $con->query("SELECT id_mesa, nombre FROM mesas JOIN salas ON mesas.id_sala = salas.id_sala");
     $mesas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
@@ -43,7 +43,7 @@ try {
 // Consultas dinámicas basadas en la selección
 define('SELECT_ACTIONS', [
     'salas' => 'SELECT id_sala, nombre, capacidad FROM salas ORDER BY nombre',
-    'mesas' => 'SELECT mesas.id_mesa, mesas.capacidad, mesas.estado, salas.nombre AS sala_nombre 
+    'mesas' => 'SELECT mesas.id_mesa, mesas.capacidad, salas.nombre AS sala_nombre 
                  FROM mesas 
                  LEFT JOIN salas ON mesas.id_sala = salas.id_sala ORDER BY salas.nombre',
     'sillas' => 'SELECT COUNT(sillas.id_silla) AS total_sillas, mesas.id_mesa, salas.nombre AS sala_nombre 
@@ -58,7 +58,7 @@ $query = SELECT_ACTIONS[$selected] ?? SELECT_ACTIONS['salas'];
 // Si la opción seleccionada es 'mesas' y se ha seleccionado una sala, modificar la consulta
 if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
     $sala = $_POST['sala'];
-    $query = "SELECT mesas.id_mesa, mesas.capacidad, mesas.estado, salas.nombre AS sala_nombre 
+    $query = "SELECT mesas.id_mesa, mesas.capacidad, salas.nombre AS sala_nombre 
               FROM mesas 
               LEFT JOIN salas ON mesas.id_sala = salas.id_sala
               WHERE salas.id_sala = :sala
@@ -69,9 +69,10 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } elseif ($selected === 'sillas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
     $sala = $_POST['sala'];
-    $query = "SELECT COUNT(sillas.id_silla) AS total_sillas, mesas.id_mesa, salas.nombre AS sala_nombre 
-              FROM sillas 
-              LEFT JOIN mesas ON sillas.id_mesa = mesas.id_mesa 
+    $query = "SELECT mesas.id_mesa, salas.nombre AS sala_nombre, 
+              IFNULL(COUNT(sillas.id_silla), 'No hay sillas aún') AS total_sillas
+              FROM mesas 
+              LEFT JOIN sillas ON sillas.id_mesa = mesas.id_mesa 
               LEFT JOIN salas ON mesas.id_sala = salas.id_sala
               WHERE salas.id_sala = :sala
               GROUP BY mesas.id_mesa, salas.nombre ORDER BY salas.nombre";
@@ -82,7 +83,7 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
 } else {
     // Si no se ha seleccionado una sala, traer todas las mesas o sillas
     if ($selected === 'mesas') {
-        $data = $con->query("SELECT mesas.id_mesa, mesas.capacidad, mesas.estado, salas.nombre AS sala_nombre 
+        $data = $con->query("SELECT mesas.id_mesa, mesas.capacidad, salas.nombre AS sala_nombre 
                              FROM mesas 
                              LEFT JOIN salas ON mesas.id_sala = salas.id_sala ORDER BY salas.nombre")->fetchAll(PDO::FETCH_ASSOC);
     } elseif ($selected === 'sillas') {
@@ -156,7 +157,6 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
             <tr>
                 <th>Mesa</th>
                 <th>Capacidad</th>
-                <th>Estado</th>
                 <th>Sala</th>
                 <th>Acciones</th>
             </tr>
@@ -179,7 +179,6 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
                 <?php elseif ($selected === 'mesas'): ?>
                     <td><?= htmlspecialchars($row['id_mesa'] ?? 'No ID') ?></td> <!-- Verifica si 'id_mesa' existe -->
                     <td><?= htmlspecialchars($row['capacidad']) ?></td>
-                    <td><?= htmlspecialchars($row['estado']) ?></td>
                     <td><?= htmlspecialchars($row['sala_nombre']) ?></td>
                 <?php else: ?>
                     <?php foreach ($row as $key => $value): ?>

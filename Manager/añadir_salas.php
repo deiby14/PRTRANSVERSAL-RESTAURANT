@@ -14,10 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtener los datos del formulario
     $nombre = $_POST['nombre'] ?? '';
     $capacidad = $_POST['capacidad'] ?? '';
+    $imagen = $_FILES['imagen'] ?? null;
 
     // Validación de campos vacíos
-    if (empty($nombre) || empty($capacidad)) {
-        $error = "Debes rellenar todos los campos.";
+    if (empty($nombre) || empty($capacidad) || !$imagen || $imagen['error'] !== UPLOAD_ERR_OK) {
+        $error = "Debes rellenar todos los campos y seleccionar una imagen.";
+    } elseif ($capacidad < 6 || $capacidad > 30) {
+        $error = "La capacidad debe estar entre 6 y 30.";
     } else {
         // Validar si el nombre de la sala ya existe
         $stmt = $con->prepare("SELECT COUNT(*) FROM salas WHERE nombre = ?");
@@ -27,18 +30,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($count > 0) {
             $error = "El nombre de la sala ya existe. Por favor, elige otro nombre.";
         } else {
-            try {
-                $con->beginTransaction(); // Iniciar la transacción
+            // Procesar la imagen
+            $targetDir = "../uploads/";
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0777, true); // Crear el directorio si no existe
+            }
 
-                // Insertar la nueva sala
-                $stmt = $con->prepare("INSERT INTO salas (nombre, capacidad) VALUES (?, ?)");
-                $stmt->execute([$nombre, $capacidad]);
+            $targetFile = $targetDir . basename($imagen["name"]);
+            if (move_uploaded_file($imagen["tmp_name"], $targetFile)) {
+                try {
+                    $con->beginTransaction(); // Iniciar la transacción
 
-                $con->commit(); // Confirmar transacción
-                $mensaje = 'Sala añadida correctamente.';
-            } catch (PDOException $e) {
-                $con->rollBack(); // Deshacer cambios si ocurre un error
-                $error = 'Error al añadir la sala: ' . $e->getMessage();
+                    // Insertar la nueva sala
+                    $stmt = $con->prepare("INSERT INTO salas (nombre, capacidad, imagen) VALUES (?, ?, ?)");
+                    $stmt->execute([$nombre, $capacidad, $targetFile]);
+
+                    $con->commit(); // Confirmar transacción
+                    $mensaje = 'Sala añadida correctamente.';
+                } catch (PDOException $e) {
+                    $con->rollBack(); // Deshacer cambios si ocurre un error
+                    $error = 'Error al añadir la sala: ' . $e->getMessage();
+                }
+            } else {
+                $error = "Error al subir la imagen.";
             }
         }
     }
@@ -109,12 +123,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="mensaje"><?php echo htmlspecialchars($mensaje); ?></p>
     <?php endif; ?>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <label for="nombre">Nombre de la Sala:</label>
         <input type="text" name="nombre" value="<?php echo htmlspecialchars($nombre ?? ''); ?>"><br><br>
 
         <label for="capacidad">Capacidad:</label>
-        <input type="number" name="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" ><br><br>
+        <input type="number" name="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>"><br><br>
+
+        <label for="imagen">Imagen de la Sala:</label>
+        <input type="file" name="imagen" accept="image/*" required><br><br>
 
         <button type="submit">Añadir Sala</button>
     </form>

@@ -12,7 +12,7 @@ if (isset($_GET['id'])) {
     $id_mesa = $_GET['id'];
     
     // Obtener los datos de la mesa
-    $stmt = $con->prepare("SELECT id_mesa, capacidad, estado, id_sala FROM mesas WHERE id_mesa = :id_mesa");
+    $stmt = $con->prepare("SELECT id_mesa, capacidad, id_sala FROM mesas WHERE id_mesa = :id_mesa");
     $stmt->bindParam(':id_mesa', $id_mesa, PDO::PARAM_INT);
     $stmt->execute();
     $mesa = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -32,20 +32,18 @@ if (isset($_GET['id'])) {
 // Actualizar mesa
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $capacidad = $_POST['capacidad'];
-    $estado = $_POST['estado'];
     $id_sala = $_POST['id_sala'];
 
     // Validación de campos vacíos
-    if (empty($capacidad) || empty($estado) || empty($id_sala)) {
+    if (empty($capacidad) || empty($id_sala)) {
         $_SESSION['mensaje'] = "Todos los campos son obligatorios.";
         header("Location: editar_mesas.php?id=$id_mesa");
         exit();
     }
 
     // Actualizar la mesa
-    $stmt = $con->prepare("UPDATE mesas SET capacidad = :capacidad, estado = :estado, id_sala = :id_sala WHERE id_mesa = :id_mesa");
+    $stmt = $con->prepare("UPDATE mesas SET capacidad = :capacidad, id_sala = :id_sala WHERE id_mesa = :id_mesa");
     $stmt->bindParam(':capacidad', $capacidad, PDO::PARAM_INT);
-    $stmt->bindParam(':estado', $estado);
     $stmt->bindParam(':id_sala', $id_sala, PDO::PARAM_INT);
     $stmt->bindParam(':id_mesa', $id_mesa, PDO::PARAM_INT);
     
@@ -128,12 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="number" id="capacidad" name="capacidad" value="<?= htmlspecialchars($mesa['capacidad']) ?>">
         <span id="error-capacidad" class="error"></span>
 
-
-        <label for="estado">Estado:</label>
-        <select name="estado" id="estado">
-            <option value="libre" <?= $mesa['estado'] === 'libre' ? 'selected' : '' ?>>Libre</option>
-            <option value="ocupada" <?= $mesa['estado'] === 'ocupada' ? 'selected' : '' ?>>Ocupada</option>
-        </select>
 
         <label for="id_sala">Sala:</label>
         <select name="id_sala" id="id_sala">

@@ -13,19 +13,18 @@ $mensaje = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtener los datos del formulario
     $capacidad = $_POST['capacidad'] ?? '';
-    $estado = $_POST['estado'] ?? '';
     $id_sala = $_POST['id_sala'] ?? '';
 
     // Validación de campos vacíos
-    if (empty($capacidad) || empty($estado) || empty($id_sala)) {
+    if (empty($capacidad) || empty($id_sala)) {
         $error = "Debes rellenar todos los campos.";
     } else {
         try {
             $con->beginTransaction(); // Iniciar la transacción
 
             // Insertar la nueva mesa
-            $stmt = $con->prepare("INSERT INTO mesas (capacidad, estado, id_sala) VALUES (?, ?, ?)");
-            $stmt->execute([$capacidad, $estado, $id_sala]);
+            $stmt = $con->prepare("INSERT INTO mesas (capacidad, id_sala) VALUES (?, ?)");
+            $stmt->execute([$capacidad, $id_sala]);
 
             $con->commit(); // Confirmar transacción
             $mensaje = 'Mesa añadida correctamente.';
@@ -109,18 +108,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST">
         <label for="capacidad">Capacidad:</label>
-        <input type="number" id="capacidad"  value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" ><br><br>
-        <span id="error-capacidad" class="error"></span>
-
-        
-        <label for="estado">Estado:</label>
-        <select name="estado">
-            <option value="libre" <?php echo isset($estado) && $estado === 'libre' ? 'selected' : ''; ?>>Libre</option>
-            <option value="ocupada" <?php echo isset($estado) && $estado === 'ocupada' ? 'selected' : ''; ?>>Ocupada</option>
-        </select><br><br>
+        <input type="number" name="capacidad" id="capacidad" value="<?php echo htmlspecialchars($capacidad ?? ''); ?>" required><br><br>
 
         <label for="id_sala">Sala:</label>
-        <select name="id_sala">
+        <select name="id_sala" required>
             <?php
             $stmt = $con->query("SELECT id_sala, nombre FROM salas");
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
