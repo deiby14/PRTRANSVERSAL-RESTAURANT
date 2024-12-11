@@ -16,6 +16,21 @@ $trabajadores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="../CSS/crud.css">
     <!-- Incluye SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        .add-user-type {
+            margin-bottom: 20px;
+        }
+        .add-user-type a {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .add-user-type a:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body id="bodyGen">
     <h1>Gestión de Trabajadores</h1>
@@ -24,6 +39,11 @@ $trabajadores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div style="margin-bottom: 20px;">
         <a href="añadir.php" class="btn btn-primary">Añadir trabajador</a>
         <a href="manager_home.php" class="btn btn-success">Volver</a>
+    </div>
+
+    <!-- Botón de Añadir Tipo de Usuario -->
+    <div class="add-user-type">
+        <a href="añadir_tipousuario.php">Añadir Tipo de Usuario</a>
     </div>
 
     <!-- Tabla de trabajadores -->

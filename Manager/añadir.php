@@ -135,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="camarero">Camarero</option>
             <option value="manager">Manager</option>
             <option value="mantenimiento">Mantenimiento</option>
+            <option value="administrador">Administrador Contable</option>
         </select>
         <span id="error-tipo-usuario" class="error"></span>
 
