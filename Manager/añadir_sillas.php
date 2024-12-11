@@ -19,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verificar si los campos no están vacíos
     if (empty($cantidad) || empty($id_mesa) || empty($id_sala)) {
         $error = "Debes de rellenar todos los campos";
-    } elseif ($cantidad < 1 || $cantidad> 30) {
+    } elseif ($cantidad < 1 || $cantidad > 30) {
         // Validación para evitar números negativos
-        $error = "La cantidad de sillas debe ser entre 1 y 30 .";
+        $error = "La cantidad de sillas debe ser entre 1 y 30.";
     } else {
         // Obtener la capacidad máxima de la mesa y las sillas actuales
         try {
@@ -78,10 +78,19 @@ try {
     echo "Error al obtener salas: " . $e->getMessage();
 }
 
-// Obtener las mesas disponibles
+// Obtener las mesas disponibles con su capacidad y número de sillas
 $mesas = [];
 try {
-    $stmt = $con->query("SELECT id_mesa, capacidad, id_sala FROM mesas");
+    $stmt = $con->query("
+        SELECT 
+            mesas.id_mesa, 
+            mesas.capacidad, 
+            mesas.id_sala, 
+            COUNT(sillas.id_silla) AS total_sillas
+        FROM mesas
+        LEFT JOIN sillas ON mesas.id_mesa = sillas.id_mesa
+        GROUP BY mesas.id_mesa
+    ");
     $mesas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     echo "Error al obtener mesas: " . $e->getMessage();
@@ -175,22 +184,21 @@ try {
         <select name="id_mesa" id="id_mesa">
             <option value="">Seleccione una mesa</option>
             <?php foreach ($mesas as $mesa): ?>
-                <option value="<?php echo $mesa['id_mesa']; ?>" data-sala="<?php echo $mesa['id_sala']; ?>">Mesa: <?php echo $mesa['id_mesa']; ?>, Capacidad: <?php echo $mesa['capacidad']; ?></option>
+                <option value="<?php echo $mesa['id_mesa']; ?>" data-sala="<?php echo $mesa['id_sala']; ?>">
+                    Mesa: <?php echo $mesa['id_mesa']; ?>, Capacidad: <?php echo $mesa['capacidad']; ?>, Sillas: <?php echo $mesa['total_sillas']; ?>
+                </option>
             <?php endforeach; ?>
         </select>
 
         <label for="cantidad">Cantidad de Sillas:</label>
         <input type="number" id="cantidad" name="cantidad" placeholder="Cantidad de Sillas" min="0">
         <span id="error-cantidad" class="mensaje-error"></span>
-        
-
 
         <button type="submit">Añadir Sillas</button>
     </form>
 
     <!-- Botón para volver a la página de administrar -->
     <a href="administrar.php">Volver</a>
-
 
     <script>
         function filtrarMesas() {

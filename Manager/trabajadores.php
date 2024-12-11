@@ -41,10 +41,7 @@ $trabajadores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="manager_home.php" class="btn btn-success">Volver</a>
     </div>
 
-    <!-- Botón de Añadir Tipo de Usuario -->
-    <div class="add-user-type">
-        <a href="añadir_tipousuario.php">Añadir Tipo de Usuario</a>
-    </div>
+
 
     <!-- Tabla de trabajadores -->
     <table>
