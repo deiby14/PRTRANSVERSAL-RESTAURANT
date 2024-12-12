@@ -125,3 +125,102 @@ form {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+
+/* Estilos responsive para los botones */
+@media screen and (max-width: 500px) {
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+        display: block;
+        text-align: center;
+        font-size: 14px;
+        padding: 8px 15px;
+    }
+
+    /* Nuevos estilos específicos para botones dentro de la tabla */
+    table .btn {
+        width: auto;
+        display: inline-block;
+        font-size: 12px;
+        padding: 6px 10px;
+        margin: 2px;
+    }
+
+    /* Ajustar el ancho de la columna de acciones */
+    table td:last-child {
+        white-space: nowrap;
+        min-width: 120px;
+    }
+
+    /* Ajustar el margen del body para dispositivos móviles */
+    #bodyGen {
+        margin: 2vh;
+        padding: 1vh;
+    }
+
+    /* Ajustar el tamaño de la tabla para dispositivos móviles */
+    table {
+        font-size: 14px;
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table thead {
+        display: none; /* Opcional: ocultar encabezados en móvil */
+    }
+
+    table, th, td {
+        padding: 5px;
+    }
+
+    /* Hacer que las celdas se ajusten mejor */
+    td {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Ajustar el tamaño de los selectores */
+    select {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    /* Ajustar el tamaño de las etiquetas */
+    label {
+        font-size: 16px;
+    }
+
+    /* Ajustar el tamaño de los botones del formulario */
+    form button {
+        font-size: 16px;
+        padding: 8px;
+        width: 100%;
+    }
+}
+
+/* Para pantallas aún más pequeñas */
+@media screen and (max-width: 350px) {
+    table .btn {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    table td:last-child {
+        min-width: 100px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    td {
+        max-width: 120px;
+    }
+
+    th, td {
+        padding: 3px;
+    }
+}
