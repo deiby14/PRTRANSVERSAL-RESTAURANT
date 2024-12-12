@@ -307,9 +307,6 @@ nav #LogoNav {
 nav {
     background-color: white;
     border-radius: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 #divSession {
@@ -319,34 +316,85 @@ nav {
 }
 
 @media (max-width: 800px) {
-
     .navbar {
-        display: none;
-    }
-
-    .navbar-toggler {
-        display: block;
-        position: absolute;
-        right: 10px;
-        top: 10px;
+        width: 100%;
+        text-align: center;
     }
 
     .navbar-collapse {
-        display: none;
-    }
-
-    .navbar-collapse.show {
-        display: flex;
+        display: flex !important;
         flex-direction: column;
-        align-items: flex-start;
+        width: 100%;
+        background-color: white;
+        padding: 15px;
+        border-radius: 0 0 15px 15px;
+        align-items: center;
     }
 
-    .d-flex {
-        display: flex;
+    .d-flex.align-items-center {
+        flex-direction: column;
+        width: 100%;
         gap: 10px;
+        text-align: center;
     }
-    #aNav{
-        display: none;
+
+    .d-flex.align-items-center .btn {
+        width: 100%;
+        margin: 5px 0 !important;
+        display: block !important;
+        text-align: center;
+    }
+
+    #divSession {
+        width: 100%;
+        margin: 10px 0;
+        text-align: center;
+        justify-content: center;
+    }
+
+    #divSession h4 {
+        font-size: 1.2em;
+        margin: 10px 0;
+        text-align: center;
+        width: 100%;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        text-align: center;
+        align-items: center;
+    }
+
+    .container {
+        width: 100%;
+        padding: 0 15px;
+        text-align: center;
+    }
+
+    .navbar-collapse.collapse:not(.show) {
+        display: flex !important;
+        align-items: center;
+    }
+
+    .btn {
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 500px) {
+    nav {
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    #LogoNav {
+        height: 40px;
+    }
+
+    #divSession h4 {
+        font-size: 1em;
+        text-align: center;
     }
 }
 
@@ -517,5 +565,99 @@ nav {
 
 .libre {
     background-color: green;
+}
+
+/* Estilos del formulario */
+form {
+    max-width: 400px;
+    margin: auto;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Estilos responsive para el formulario */
+@media screen and (max-width: 500px) {
+    form {
+        max-width: 100%;
+        margin: 10px;
+        padding: 15px;
+    }
+
+    input, select, button {
+        padding: 8px;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    label {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    h1 {
+        font-size: 24px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .error, .mensaje {
+        font-size: 12px;
+        margin: 5px 0;
+    }
+
+    /* Ajustar el botón de volver */
+    .btn-success {
+        width: 100%;
+        margin-top: 10px;
+        text-align: center;
+        display: block;
+    }
+}
+
+/* Estilos para el botón de volver */
+.btn-volver {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-volver:hover {
+    background-color: #218838;
+}
+
+@media screen and (max-width: 500px) {
+    .btn-volver {
+        max-width: calc(100% - 20px);
+        margin: 10px;
+        font-size: 14px;
+        padding: 8px;
+    }
 }
 

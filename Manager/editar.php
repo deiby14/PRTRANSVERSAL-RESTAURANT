@@ -138,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Actualizar</button>
     </form>
 
-    <a href="trabajadores.php">Volver</a>
+    <a href="trabajadores.php" class="btn-volver">Volver</a>
 </body>
 <script src="../Js/validaeditar.js"></script>
 

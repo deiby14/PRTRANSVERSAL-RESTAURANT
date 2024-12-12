@@ -75,10 +75,19 @@ $salas = $stmtSalas->fetchAll();
 <body id="bodyGen">
     <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary">
         <div class="container">
-            <!-- Logo como botón de hamburguesa -->
-            <a href="./manager_home.php" data-bs-toggle="collapse" data-bs-target="#navbarButtonsExample" aria-controls="navbarButtonsExample" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand" href="./manager_home.php">
                 <img id="LogoNav" src="../img/LOGO-REST.png" alt="Logo" />
             </a>
+            
+            <!-- Botón hamburguesa -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarButtonsExample" 
+                    aria-controls="navbarButtonsExample" 
+                    aria-expanded="false" 
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
             <div class="collapse navbar-collapse" id="navbarButtonsExample">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
