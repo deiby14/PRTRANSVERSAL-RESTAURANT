@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Añadir Trabajador</button>
     </form>
 
-    <a href="trabajadores.php" class="btn btn-success">Volver</a>
+    <a href="trabajadores.php" class="btn-volver">Volver</a>
 </body>
 <body>
     <!-- Tu contenido HTML -->

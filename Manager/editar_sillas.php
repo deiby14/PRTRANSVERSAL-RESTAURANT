@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit">Actualizar Sillas</button>
     </form>
 
-    <a href="administrar.php">Volver</a>
+    <a href="administrar.php" class="btn-volver">Volver</a>
 
 
 </body>

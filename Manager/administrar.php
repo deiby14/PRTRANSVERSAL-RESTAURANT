@@ -113,7 +113,7 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
     <h1>Administrar Recursos</h1>
 
     <form method="POST" action="">
-        <label for="tabla">Selecciona una tabla:</label>
+        <label for="tabla">Selecciona una opcion:</label>
         <select name="tabla" id="tabla" onchange="this.form.submit(); actualizarBotonAnadir();">
             <option value="salas" <?= $selected === 'salas' ? 'selected' : '' ?>>Salas</option>
             <option value="mesas" <?= $selected === 'mesas' ? 'selected' : '' ?>>Mesas</option>
@@ -124,7 +124,7 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
     <!-- Mostrar select para salas solo cuando se selecciona "Mesas" o "Sillas" -->
     <?php if ($selected === 'mesas' || $selected === 'sillas'): ?>
         <form method="POST" action="">
-            <label for="sala">Selecciona una sala:</label>
+            <label for="sala">Selecciona una opcion:</label>
             <select name="sala" id="sala" onchange="this.form.submit();">
                 <option value="">Todas las salas</option>
                 <?php foreach ($salas as $sala): ?>

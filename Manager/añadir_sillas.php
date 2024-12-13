@@ -198,7 +198,7 @@ try {
     </form>
 
     <!-- Botón para volver a la página de administrar -->
-    <a href="administrar.php">Volver</a>
+    <a href="administrar.php" class="btn-volver">Volver</a>
 
     <script>
         function filtrarMesas() {

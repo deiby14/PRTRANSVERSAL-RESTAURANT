@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <br>
-    <a href="administrar.php">Volver</a>
+    <a href="administrar.php" class="btn-volver">Volver</a>
 </body>
 <script src="../Js/validañadirsalas.js"></script>
 </html>
