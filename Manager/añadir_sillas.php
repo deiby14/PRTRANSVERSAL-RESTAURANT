@@ -170,6 +170,7 @@ try {
     <?php if ($error): ?>
         <p class="error"><?php echo $error; ?></p>
     <?php endif; ?>
+    <h1>Añadir sillas</h1>
 
     <form method="POST" action="">
         <label for="id_sala">Selecciona una Sala:</label>
@@ -198,7 +199,7 @@ try {
     </form>
 
     <!-- Botón para volver a la página de administrar -->
-    <a href="administrar.php">Volver</a>
+    <a href="administrar.php" class="btn-volver">Volver</a>
 
     <script>
         function filtrarMesas() {

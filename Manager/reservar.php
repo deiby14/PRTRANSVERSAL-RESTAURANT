@@ -223,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     echo 'Cliente: ' . htmlspecialchars($reserva['nombre_cliente']) . ' - ';
                     echo 'Desde: ' . htmlspecialchars($reserva['hora_reserva']) . ' - ';
                     echo 'Hasta: ' . htmlspecialchars($reserva['hora_fin']);
-                    echo ' <button onclick="cancelarReserva(' . htmlspecialchars($reserva['id_reserva']) . ')" class="btn btn-danger btn-sm">Cancelar</button>';
+                    echo ' <button onclick="cancelarReserva(' . htmlspecialchars($reserva['id_reserva']) . ')" class="btn-cancelar btn-sm">Cancelar</button>';
                     echo '</li>';
                 }
                 echo '</ul>';
@@ -253,7 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 
 </body>
-<script src="../Js/validareservas.css"></script>
+<script src="../Js/validareservas.js"></script>
 </html>
 
 <?php

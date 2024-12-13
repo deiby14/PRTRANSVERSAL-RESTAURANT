@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <br><br>
-    <a href="administrar.php" class="btn btn-secondary">Volver</a>
+    <a href="administrar.php" class="btn-volver">Volver</a>
 
     <?php if (isset($_SESSION['mensaje'])): ?>
         <p class="error"><?= $_SESSION['mensaje']; ?></p>
