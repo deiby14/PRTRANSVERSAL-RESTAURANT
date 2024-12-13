@@ -1,31 +1,19 @@
 <?php
-// Conexión a la base de datos
-$servername = "localhost";
-$username = "root";
-$password = "Agustin51";
-$dbname = "db_restaurante";
-
-try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    echo "Error de conexión: " . $e->getMessage();
-    die();
-}
+include_once("../conexion.php");
 
 // Obtener las opciones para los filtros
 $sala_query = "SELECT id_sala, nombre FROM salas";
-$sala_stmt = $conn->prepare($sala_query);
+$sala_stmt = $con->prepare($sala_query);
 $sala_stmt->execute();
 $salas = $sala_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $usuario_query = "SELECT id_usuario, nombre_completo, tipo_usuario FROM usuarios";
-$usuario_stmt = $conn->prepare($usuario_query);
+$usuario_stmt = $con->prepare($usuario_query);
 $usuario_stmt->execute();
 $usuarios = $usuario_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $mesa_query = "SELECT id_mesa FROM mesas";
-$mesa_stmt = $conn->prepare($mesa_query);
+$mesa_stmt = $con->prepare($mesa_query);
 $mesa_stmt->execute();
 $mesas = $mesa_stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -79,7 +67,7 @@ $sql_historial .= " GROUP BY mesas.id_mesa, reservas.id_reserva, salas.id_sala, 
           ORDER BY reservas.hora_reserva";
 
 // Ejecutar la consulta con los parámetros de los filtros
-$stmt_historial = $conn->prepare($sql_historial);
+$stmt_historial = $con->prepare($sql_historial);
 
 if ($sala_filter) {
     $stmt_historial->bindParam(':sala', $sala_filter, PDO::PARAM_INT);
@@ -123,7 +111,7 @@ $sql_mesas_reservadas .= " GROUP BY mesas.id_mesa, salas.id_sala
 ORDER BY total_reservas DESC
 LIMIT 10";
 
-$stmt_mesas_reservadas = $conn->prepare($sql_mesas_reservadas);
+$stmt_mesas_reservadas = $con->prepare($sql_mesas_reservadas);
 
 if ($sala_mesas_reservadas_filter) {
     $stmt_mesas_reservadas->bindParam(':sala_mesas_reservadas', $sala_mesas_reservadas_filter, PDO::PARAM_INT);
@@ -135,7 +123,7 @@ $stmt_mesas_reservadas->execute();
 $resultado_mesas_reservadas = $stmt_mesas_reservadas->fetchAll(PDO::FETCH_ASSOC);
 
 // Cerrar la conexión
-$conn = null;
+$con = null;
 ?>
 
 <!DOCTYPE html>
