@@ -177,27 +177,44 @@ $con = null;
             display: block;
         }
         .filter-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .filter-form select, .filter-form input, .filter-form button {
-            padding: 8px;
-            font-size: 16px;
-            margin: 5px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        .filter-form button {
-            background-color: #007BFF;
-            color: white;
-            cursor: pointer;
-        }
-        .filter-form button:hover {
-            background-color: #0056b3;
-        }
+    display: flex;
+    flex-wrap: nowrap; /* Evita que los elementos se envuelvan */
+    justify-content: space-between; /* Espacia uniformemente los elementos */
+    align-items: center; /* Centra los elementos verticalmente */
+    gap: 10px; /* Espacio entre los elementos */
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.filter-form select, 
+.filter-form input, 
+.filter-form button {
+    padding: 6px;
+    font-size: 14px;
+    margin: 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    flex-grow: 1; /* Hace que los inputs tengan un tamaño uniforme */
+    min-width: 150px; /* Tamaño mínimo para los inputs */
+}
+
+.filter-form button {
+    flex-grow: 0; /* Botón de tamaño fijo */
+    width: auto;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+}
+
+.filter-form button:hover {
+    background-color: #0056b3;
+}
+
         .result-item {
             padding: 10px;
             margin-bottom: 15px;
@@ -245,38 +262,43 @@ $con = null;
         <div class="tab <?= $active_tab == 'mesas_reservadas' ? 'active' : '' ?>" onclick="showTab('mesas_reservadas')">Mesas Más Reservadas</div>
     </div>
 
+    <!-- Contenedor de filtros -->
+    <div class="filter-form">
+    <form id="filterForm" method="GET">
+        <input type="hidden" name="active_tab" value="historial">
+        
+        <select name="sala" id="sala" onchange="this.form.submit()">
+            <option value="">Todas las salas</option>
+            <?php foreach ($salas as $sala): ?>
+                <option value="<?= $sala['id_sala'] ?>" <?= $sala['id_sala'] == $sala_filter ? 'selected' : '' ?>><?= $sala['nombre'] ?></option>
+            <?php endforeach; ?>
+        </select>
+        
+        <select name="usuario" id="usuario" onchange="this.form.submit()">
+            <option value="">Todos los usuarios</option>
+            <?php foreach ($usuarios as $usuario): ?>
+                <option value="<?= $usuario['id_usuario'] ?>" <?= $usuario['id_usuario'] == $usuario_filter ? 'selected' : '' ?>><?= $usuario['nombre_completo'] ?> (<?= $usuario['tipo_usuario'] ?>)</option>
+            <?php endforeach; ?>
+        </select>
+        
+        <input type="text" name="nombre_reserva" placeholder="Nombre de la Reserva" value="<?= htmlspecialchars($nombre_reserva_filter) ?>" onchange="this.form.submit()">
+        
+        <select name="mesa" id="mesa" onchange="this.form.submit()">
+            <option value="">Todas las mesas</option>
+            <?php foreach ($mesas as $mesa): ?>
+                <option value="<?= $mesa['id_mesa'] ?>" <?= $mesa['id_mesa'] == $mesa_filter ? 'selected' : '' ?>>Mesa <?= $mesa['id_mesa'] ?></option>
+            <?php endforeach; ?>
+        </select>
+        
+        <input type="date" name="fecha_reserva" value="<?= htmlspecialchars($fecha_reserva_filter) ?>" onchange="this.form.submit()">
+        
+        <button type="button" onclick="clearFilters()">Limpiar Filtros</button>
+    </form>
+</div>
+
+
     <!-- Contenido de la pestaña Historial de Reservas -->
     <div id="historial" class="tab-content <?= $active_tab == 'historial' ? 'active' : '' ?>">
-        <form id="filterForm" class="filter-form" method="GET">
-            <input type="hidden" name="active_tab" value="historial">
-            <select name="sala" id="sala" onchange="this.form.submit()">
-                <option value="">Todas las salas</option>
-                <?php foreach ($salas as $sala): ?>
-                    <option value="<?= $sala['id_sala'] ?>" <?= $sala['id_sala'] == $sala_filter ? 'selected' : '' ?>><?= $sala['nombre'] ?></option>
-                <?php endforeach; ?>
-            </select>
-
-            <select name="usuario" id="usuario" onchange="this.form.submit()">
-                <option value="">Todos los usuarios</option>
-                <?php foreach ($usuarios as $usuario): ?>
-                    <option value="<?= $usuario['id_usuario'] ?>" <?= $usuario['id_usuario'] == $usuario_filter ? 'selected' : '' ?>><?= $usuario['nombre_completo'] ?> (<?= $usuario['tipo_usuario'] ?>)</option>
-                <?php endforeach; ?>
-            </select>
-
-            <input type="text" name="nombre_reserva" placeholder="Nombre de la Reserva" value="<?= htmlspecialchars($nombre_reserva_filter) ?>" onchange="this.form.submit()">
-
-            <select name="mesa" id="mesa" onchange="this.form.submit()">
-                <option value="">Todas las mesas</option>
-                <?php foreach ($mesas as $mesa): ?>
-                    <option value="<?= $mesa['id_mesa'] ?>" <?= $mesa['id_mesa'] == $mesa_filter ? 'selected' : '' ?>>Mesa <?= $mesa['id_mesa'] ?></option>
-                <?php endforeach; ?>
-            </select>
-
-            <input type="date" name="fecha_reserva" value="<?= htmlspecialchars($fecha_reserva_filter) ?>" onchange="this.form.submit()">
-
-            <button type="button" onclick="clearFilters()">Limpiar Filtros</button>
-        </form>
-
         <div id="results">
             <?php if ($resultado_historial): ?>
                 <?php foreach ($resultado_historial as $row): ?>

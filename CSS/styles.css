@@ -661,19 +661,3 @@ input, select, button {
     }
 }
 
-.btn-cancelar {
-    background-color: #dc3545; /* Color rojo */
-    color: white;
-    padding: 5px 10px; /* Tamaño estándar del botón */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px; /* Tamaño de fuente estándar */
-    transition: background-color 0.3s;
-    display: inline-block; /* Asegura que el botón no se expanda más allá de su contenido */
-}
-
-.btn-cancelar:hover {
-    background-color: #c82333; /* Color rojo más oscuro al pasar el ratón */
-}
-
