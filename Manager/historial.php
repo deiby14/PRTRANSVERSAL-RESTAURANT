@@ -1,6 +1,22 @@
 <?php
 include_once("../conexion.php");
 
+// Obtener las opciones para los filtros
+$sala_query = "SELECT id_sala, nombre FROM salas";
+$sala_stmt = $con->prepare($sala_query);
+$sala_stmt->execute();
+$salas = $sala_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$usuario_query = "SELECT id_usuario, nombre_completo, tipo_usuario FROM usuarios";
+$usuario_stmt = $con->prepare($usuario_query);
+$usuario_stmt->execute();
+$usuarios = $usuario_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$mesa_query = "SELECT id_mesa FROM mesas";
+$mesa_stmt = $con->prepare($mesa_query);
+$mesa_stmt->execute();
+$mesas = $mesa_stmt->fetchAll(PDO::FETCH_ASSOC);
+
 // Obtener los valores de los filtros si se envían
 $sala_filter = isset($_GET['sala']) ? $_GET['sala'] : '';
 $usuario_filter = isset($_GET['usuario']) ? $_GET['usuario'] : '';
