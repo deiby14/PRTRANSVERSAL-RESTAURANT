@@ -1,207 +1,350 @@
 <?php
-// Incluir el archivo de conexión a la base de datos
-include '../conexion.php';
+// Conexión a la base de datos
+$servername = "localhost";
+$username = "root";
+$password = "Agustin51";
+$dbname = "db_restaurante";
 
-// Verificar si se ha solicitado limpiar los filtros
-if (isset($_POST['limpiar'])) {
-    header("Location: historial.php");
-    exit();
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    echo "Error de conexión: " . $e->getMessage();
+    die();
 }
 
-// Obtener las salas para el selector
-$querySalas = "SELECT id_sala, nombre FROM salas";
-$stmtSalas = $con->prepare($querySalas);
-$stmtSalas->execute();
-$salas = $stmtSalas->fetchAll(PDO::FETCH_ASSOC);
+// Obtener las opciones para los filtros
+$sala_query = "SELECT id_sala, nombre FROM salas";
+$sala_stmt = $conn->prepare($sala_query);
+$sala_stmt->execute();
+$salas = $sala_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Obtener las mesas para el selector
-$queryMesas = "SELECT id_mesa FROM mesas";
-$stmtMesas = $con->prepare($queryMesas);
-$stmtMesas->execute();
-$mesas = $stmtMesas->fetchAll(PDO::FETCH_ASSOC);
+$usuario_query = "SELECT id_usuario, nombre_completo, tipo_usuario FROM usuarios";
+$usuario_stmt = $conn->prepare($usuario_query);
+$usuario_stmt->execute();
+$usuarios = $usuario_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Obtener los usuarios para el selector (solo manager o camarero)
-$queryUsuarios = "SELECT id_usuario, nombre_completo FROM usuarios WHERE tipo_usuario IN ('manager', 'camarero')";
-$stmtUsuarios = $con->prepare($queryUsuarios);
-$stmtUsuarios->execute();
-$usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
+$mesa_query = "SELECT id_mesa FROM mesas";
+$mesa_stmt = $conn->prepare($mesa_query);
+$mesa_stmt->execute();
+$mesas = $mesa_stmt->fetchAll(PDO::FETCH_ASSOC);
+// Obtener los valores de los filtros si se envían
+$sala_filter = isset($_GET['sala']) ? $_GET['sala'] : '';
+$usuario_filter = isset($_GET['usuario']) ? $_GET['usuario'] : '';
+$nombre_reserva_filter = isset($_GET['nombre_reserva']) ? $_GET['nombre_reserva'] : '';
+$mesa_filter = isset($_GET['mesa']) ? $_GET['mesa'] : '';
+$fecha_reserva_filter = isset($_GET['fecha_reserva']) ? $_GET['fecha_reserva'] : '';
+$sala_mesas_reservadas_filter = isset($_GET['sala_mesas_reservadas']) ? $_GET['sala_mesas_reservadas'] : '';
+$active_tab = isset($_GET['active_tab']) ? $_GET['active_tab'] : 'historial';
 
-// Aplicar filtros si se han seleccionado
-$salaSeleccionada = $_POST['sala'] ?? '';
-$mesaSeleccionada = $_POST['mesa'] ?? '';
-$usuarioSeleccionado = $_POST['usuario'] ?? '';
-$nombreReserva = $_POST['nombre_reserva'] ?? '';
+// Consulta SQL para el historial de reservas
+$sql_historial = "
+SELECT 
+    mesas.id_mesa AS id_mesa, 
+    mesas.capacidad, 
+    salas.nombre AS sala_nombre, 
+    reservas.id_reserva, 
+    reservas.hora_reserva, 
+    reservas.hora_fin,
+    reservas.nombre_cliente,
+    usuarios.nombre_completo,
+    COUNT(sillas.id_silla) AS total_sillas
+FROM mesas
+LEFT JOIN reservas ON mesas.id_mesa = reservas.id_mesa
+LEFT JOIN salas ON mesas.id_sala = salas.id_sala
+LEFT JOIN usuarios ON usuarios.id_usuario = reservas.camarero_id
+LEFT JOIN sillas ON sillas.id_mesa = mesas.id_mesa
+WHERE 1=1
+";
 
-// Filtro sumativo por sala, mesa, usuario y nombre de reserva
-$queryReservas = "SELECT s.nombre, m.id_mesa, r.nombre_cliente, COUNT(r.id_reserva) AS total_reservas
-                  FROM salas s
-                  LEFT JOIN mesas m ON s.id_sala = m.id_sala
-                  LEFT JOIN reservas r ON m.id_mesa = r.id_mesa
-                  LEFT JOIN usuarios u ON r.camarero_id = u.id_usuario
-                  WHERE (:sala = '' OR s.id_sala = :sala)
-                  AND (:mesa = '' OR m.id_mesa = :mesa)
-                  AND (:usuario = '' OR u.id_usuario = :usuario)
-                  AND (:nombre_reserva = '' OR r.nombre_cliente LIKE :nombre_reserva)
-                  GROUP BY s.id_sala, m.id_mesa, r.nombre_cliente";
-$stmtReservas = $con->prepare($queryReservas);
-$stmtReservas->bindParam(':sala', $salaSeleccionada);
-$stmtReservas->bindParam(':mesa', $mesaSeleccionada);
-$stmtReservas->bindParam(':usuario', $usuarioSeleccionado);
-$nombreReservaWildcard = "%$nombreReserva%";
-$stmtReservas->bindParam(':nombre_reserva', $nombreReservaWildcard);
-$stmtReservas->execute();
+// Aplicar los filtros si se han seleccionado
+if ($sala_filter) {
+    $sql_historial .= " AND mesas.id_sala = :sala";
+}
+if ($usuario_filter) {
+    $sql_historial .= " AND usuarios.id_usuario = :usuario";
+}
+if ($nombre_reserva_filter) {
+    $sql_historial .= " AND reservas.nombre_cliente LIKE :nombre_reserva";
+}
+if ($mesa_filter) {
+    $sql_historial .= " AND mesas.id_mesa = :mesa";
+}
+if ($fecha_reserva_filter) {
+    $sql_historial .= " AND DATE(reservas.hora_reserva) = :fecha_reserva";
+}
+
+$sql_historial .= " GROUP BY mesas.id_mesa, reservas.id_reserva, salas.id_sala, usuarios.id_usuario
+          ORDER BY reservas.hora_reserva";
+
+// Ejecutar la consulta con los parámetros de los filtros
+$stmt_historial = $conn->prepare($sql_historial);
+
+if ($sala_filter) {
+    $stmt_historial->bindParam(':sala', $sala_filter, PDO::PARAM_INT);
+}
+if ($usuario_filter) {
+    $stmt_historial->bindParam(':usuario', $usuario_filter, PDO::PARAM_INT);
+}
+if ($nombre_reserva_filter) {
+    $nombre_reserva_filter = "%$nombre_reserva_filter%";
+    $stmt_historial->bindParam(':nombre_reserva', $nombre_reserva_filter, PDO::PARAM_STR);
+}
+if ($mesa_filter) {
+    $stmt_historial->bindParam(':mesa', $mesa_filter, PDO::PARAM_INT);
+}
+if ($fecha_reserva_filter) {
+    $stmt_historial->bindParam(':fecha_reserva', $fecha_reserva_filter, PDO::PARAM_STR);
+}
+$stmt_historial->execute();
+// Obtener los resultados del historial
+$resultado_historial = $stmt_historial->fetchAll(PDO::FETCH_ASSOC);
+// Consulta SQL para las mesas más reservadas, incluyendo la sala
+$sql_mesas_reservadas = "
+SELECT 
+    mesas.id_mesa, 
+    salas.nombre AS sala_nombre,
+    COUNT(reservas.id_reserva) AS total_reservas
+FROM reservas
+LEFT JOIN mesas ON reservas.id_mesa = mesas.id_mesa
+LEFT JOIN salas ON mesas.id_sala = salas.id_sala
+WHERE 1=1
+";
+if ($sala_mesas_reservadas_filter) {
+    $sql_mesas_reservadas .= " AND mesas.id_sala = :sala_mesas_reservadas";
+}
+$sql_mesas_reservadas .= " GROUP BY mesas.id_mesa, salas.id_sala
+ORDER BY total_reservas DESC
+LIMIT 10";
+$stmt_mesas_reservadas = $conn->prepare($sql_mesas_reservadas);
+if ($sala_mesas_reservadas_filter) {
+    $stmt_mesas_reservadas->bindParam(':sala_mesas_reservadas', $sala_mesas_reservadas_filter, PDO::PARAM_INT);
+}
+
+$stmt_mesas_reservadas->execute();
+
+// Obtener los resultados de las mesas más reservadas
+$resultado_mesas_reservadas = $stmt_mesas_reservadas->fetchAll(PDO::FETCH_ASSOC);
+
+// Cerrar la conexión
+$conn = null;
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Reservas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/styles.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap');
-
-        * {
-            margin: 0;
-            box-sizing: border-box;
-            font-family: "Kanit", sans-serif;
-            font-weight: 600;
-        }
-
         body {
-            background-image: url('ruta/a/tu/imagen.jpg');
-            background-size: cover;
-            background-position: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
             padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
-
-        .btn-volver {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
+        h1 {
             text-align: center;
-            border-radius: 5px;
-            border: none;
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
             cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            margin: 0 5px;
+            border-radius: 4px;
         }
-
-        .btn-volver:hover {
-            background-color: #218838;
+        .tab.active {
+            background-color: #0056b3;
         }
-
-        form {
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .filter-form {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 20px;
+            justify-content: center;
             margin-bottom: 20px;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-
-        label {
-            margin-right: 5px;
-            font-weight: bold;
-        }
-
-        select, input[type="text"] {
-            padding: 10px;
+        .filter-form select, .filter-form input, .filter-form button {
+            padding: 8px;
+            font-size: 16px;
+            margin: 5px;
+            border-radius: 4px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            width: calc(25% - 20px);
         }
-
-        button {
-            padding: 10px 20px;
-            background-color: #e58517;
+        .filter-form button {
+            background-color: #007BFF;
             color: white;
-            border: none;
-            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
         }
-
-        button:hover {
-            background-color: #bf6f00ad;
+        .filter-form button:hover {
+            background-color: #0056b3;
         }
-
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .reservas-filtradas {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        p {
-            background-color: #fff;
+        .result-item {
             padding: 10px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 10px;
+        }
+        .result-item p {
+            margin: 5px 0;
+        }
+        .clear-filters {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        .back-button a {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .back-button a:hover {
+            background-color: #0056b3;
         }
     </style>
-    <script>
-        function autoSubmit() {
-            document.getElementById('filterForm').submit();
-        }
-    </script>
 </head>
-<body>
-    <a href="manager_home.php" class="btn-volver">Volver a Manager Home</a>
+<body id="bodyGen">
 
-    <form method="post" action="" id="filterForm">
-        <label for="sala">Filtrar por Sala:</label>
-        <select name="sala" id="sala" onchange="autoSubmit()">
-            <option value="">Todas</option>
-            <?php foreach ($salas as $sala): ?>
-                <option value="<?= $sala['id_sala'] ?>" <?= $salaSeleccionada == $sala['id_sala'] ? 'selected' : '' ?>>
-                    <?= $sala['nombre'] ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+<div class="container">
+    <!-- Botón de Volver -->
+    <div class="back-button">
+        <a href="manager_home.php">Volver a Inicio</a>
+    </div>
+    <h1>Historial de Reservas</h1>
 
-        <label for="mesa">Filtrar por Mesa:</label>
-        <select name="mesa" id="mesa" onchange="autoSubmit()">
-            <option value="">Todas</option>
-            <?php foreach ($mesas as $mesa): ?>
-                <option value="<?= $mesa['id_mesa'] ?>" <?= $mesaSeleccionada == $mesa['id_mesa'] ? 'selected' : '' ?>>
-                    Mesa <?= $mesa['id_mesa'] ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-
-        <label for="usuario">Filtrar por Usuario:</label>
-        <select name="usuario" id="usuario" onchange="autoSubmit()">
-            <option value="">Todos</option>
-            <?php foreach ($usuarios as $usuario): ?>
-                <option value="<?= $usuario['id_usuario'] ?>" <?= $usuarioSeleccionado == $usuario['id_usuario'] ? 'selected' : '' ?>>
-                    <?= $usuario['nombre_completo'] ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-
-        <label for="nombre_reserva">Filtrar por Nombre de Reserva:</label>
-        <input type="text" name="nombre_reserva" id="nombre_reserva" value="<?= htmlspecialchars($nombreReserva) ?>" oninput="autoSubmit()">
-
-        <button type="submit" name="limpiar">Limpiar Filtros</button>
-    </form>
-
-    <div class="reservas-filtradas">
-        <h2>Reservas Filtradas</h2>
-        <?php while ($fila = $stmtReservas->fetch(PDO::FETCH_ASSOC)): ?>
-            <p>Sala: <?= $fila['nombre'] ?> - Mesa ID: <?= $fila['id_mesa'] ?> - Cliente: <?= $fila['nombre_cliente'] ?> - Total Reservas: <?= $fila['total_reservas'] ?></p>
-        <?php endwhile; ?>
+    <!-- Pestañas -->
+    <div class="tabs">
+        <div class="tab <?= $active_tab == 'historial' ? 'active' : '' ?>" onclick="showTab('historial')">Historial de Reservas</div>
+        <div class="tab <?= $active_tab == 'mesas_reservadas' ? 'active' : '' ?>" onclick="showTab('mesas_reservadas')">Mesas Más Reservadas</div>
+    </div>
+    <!-- Contenido de la pestaña Historial de Reservas -->
+    <div id="historial" class="tab-content <?= $active_tab == 'historial' ? 'active' : '' ?>">
+        <form id="filterForm" class="filter-form" method="GET">
+            <input type="hidden" name="active_tab" value="historial">
+            <select name="sala" id="sala" onchange="this.form.submit()">
+                <option value="">Todas las salas</option>
+                <?php foreach ($salas as $sala): ?>
+                    <option value="<?= $sala['id_sala'] ?>" <?= $sala['id_sala'] == $sala_filter ? 'selected' : '' ?>><?= $sala['nombre'] ?></option>
+                <?php endforeach; ?>
+            </select>
+            <select name="usuario" id="usuario" onchange="this.form.submit()">
+                <option value="">Todos los usuarios</option>
+                <?php foreach ($usuarios as $usuario): ?>
+                    <option value="<?= $usuario['id_usuario'] ?>" <?= $usuario['id_usuario'] == $usuario_filter ? 'selected' : '' ?>><?= $usuario['nombre_completo'] ?> (<?= $usuario['tipo_usuario'] ?>)</option>
+                <?php endforeach; ?>
+            </select>
+            <input type="text" name="nombre_reserva" placeholder="Nombre de la Reserva" value="<?= htmlspecialchars($nombre_reserva_filter) ?>" onchange="this.form.submit()">
+            <select name="mesa" id="mesa" onchange="this.form.submit()">
+                <option value="">Todas las mesas</option>
+                <?php foreach ($mesas as $mesa): ?>
+                    <option value="<?= $mesa['id_mesa'] ?>" <?= $mesa['id_mesa'] == $mesa_filter ? 'selected' : '' ?>>Mesa <?= $mesa['id_mesa'] ?></option>
+                <?php endforeach; ?>
+            </select>
+            <input type="date" name="fecha_reserva" value="<?= htmlspecialchars($fecha_reserva_filter) ?>" onchange="this.form.submit()">
+            <button type="button" onclick="clearFilters()">Limpiar Filtros</button>
+        </form>
+        <div id="results">
+            <?php if ($resultado_historial): ?>
+                <?php foreach ($resultado_historial as $row): ?>
+                    <div class="result-item">
+                        <p><strong>Mesa ID:</strong> <?= $row['id_mesa'] ?></p>
+                        <p><strong>Capacidad de mesa:</strong> <?= $row['capacidad'] ?></p>
+                        <p><strong>Sala:</strong> <?= $row['sala_nombre'] ?></p>
+                        <p><strong>Reserva ID:</strong> <?= $row['id_reserva'] ?></p>
+                        <p><strong>Nombre del Cliente:</strong> <?= $row['nombre_cliente'] ?></p>
+                        <p><strong>Hora de reserva:</strong> <?= $row['hora_reserva'] ?></p>
+                        <p><strong>Hora de fin:</strong> <?= $row['hora_fin'] ?></p>
+                        <p><strong>Usuario (Camarero):</strong> <?= $row['nombre_completo'] ?></p>
+                        <p><strong>Total de sillas en la mesa:</strong> <?= $row['total_sillas'] ?></p>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No se encontraron reservas.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+    <!-- Contenido de la pestaña Mesas Más Reservadas -->
+    <div id="mesas_reservadas" class="tab-content <?= $active_tab == 'mesas_reservadas' ? 'active' : '' ?>">
+        <form id="filterFormMesas" class="filter-form" method="GET">
+            <input type="hidden" name="active_tab" value="mesas_reservadas">
+            <select name="sala_mesas_reservadas" id="sala_mesas_reservadas" onchange="this.form.submit()">
+                <option value="">Todas las salas</option>
+                <?php foreach ($salas as $sala): ?>
+                    <option value="<?= $sala['id_sala'] ?>" <?= $sala['id_sala'] == $sala_mesas_reservadas_filter ? 'selected' : '' ?>><?= $sala['nombre'] ?></option>
+                <?php endforeach; ?>
+            </select>
+        </form>
+        <div id="results">
+            <?php if ($resultado_mesas_reservadas): ?>
+                <?php foreach ($resultado_mesas_reservadas as $row): ?>
+                    <div class="result-item">
+                        <p><strong>Mesa ID:</strong> <?= $row['id_mesa'] ?></p>
+                        <p><strong>Sala:</strong> <?= $row['sala_nombre'] ?></p>
+                        <p><strong>Total de Reservas:</strong> <?= $row['total_reservas'] ?></p>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No se encontraron datos de mesas reservadas.</p>
+            <?php endif; ?>
+        </div>
     </div>
 
-    <a href="manager_home.php" class="btn-volver">Volver a Manager Home</a>
+    <div class="clear-filters">
+        <button onclick="clearFilters()">Limpiar Filtros</button>
+    </div>
+</div>
+
+<script>
+    function showTab(tabId) {
+        // Ocultar todas las pestañas
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        // Mostrar la pestaña seleccionada
+        document.getElementById(tabId).classList.add('active');
+        document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+        // Actualizar el campo oculto para mantener la pestaña activa
+        document.querySelectorAll('input[name="active_tab"]').forEach(input => input.value = tabId);
+    }
+    // Función para limpiar los filtros
+    function clearFilters() {
+        document.getElementById("sala").selectedIndex = 0;
+        document.getElementById("usuario").selectedIndex = 0;
+        document.getElementById("mesa").selectedIndex = 0;
+        document.querySelector('input[name="nombre_reserva"]').value = '';
+        document.querySelector('input[name="fecha_reserva"]').value = '';
+        document.getElementById("filterForm").submit();
+    }
+</script>
+
 </body>
 </html>
