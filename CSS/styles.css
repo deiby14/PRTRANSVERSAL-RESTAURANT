@@ -104,18 +104,23 @@
 
 .labelLogIn {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 20px;
     font-weight: bold;
     color: white;
 }
 
 .inputLogIn {
-    width: 60vh;
+    width: 100%; /* Se ajusta al ancho disponible del contenedor */
+    max-width: 400px; /* Límite opcional para evitar que sea demasiado grande */
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #dbdbdb;
     border-radius: 5px;
+    box-sizing: border-box; /* Incluye padding y borde en el ancho total */
 }
+
+
+
 
 .botonLogIn {
     background-color: #e58517;
