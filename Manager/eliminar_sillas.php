@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eliminar Sillas</title>
-    <link rel="stylesheet" href="../CSS/form.css"> <!-- Asegúrate de tener un estilo adecuado -->
+    <link rel="stylesheet" href="../CSS/styles.css"> <!-- Asegúrate de tener un estilo adecuado -->
     <style>
       
         <style>
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
     </style>
 </head>
-<body>
+<body id="bodyGen">
     <h1>Eliminar Sillas</h1>
     
     <!-- Mostrar mensaje de error si lo hay -->
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="hidden" name="id_mesa" value="<?= $id_mesa ?>">
 
         <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a href="administrar.php" class="btn-success:hover">Volver</a>
+        <a href="administrar.php" class="btn-volver">Volver</a>
 
 
     </form>

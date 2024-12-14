@@ -41,7 +41,6 @@ if (isset($_GET['tabla']) && isset($_GET['id'])) {
 
         // Confirmar la transacción
         $con->commit();
-        $_SESSION['mensaje'] = 'Elemento eliminado correctamente.';
 
     } catch (PDOException $e) {
         // Si hay algún error, revertimos la transacción

@@ -24,7 +24,7 @@ $usuario_stmt = $conn->prepare($usuario_query);
 $usuario_stmt->execute();
 $usuarios = $usuario_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$mesa_query = "SELECT id_mesa FROM mesas";
+$mesa_query = "SELECT id_mesa, id_sala FROM mesas";
 $mesa_stmt = $conn->prepare($mesa_query);
 $mesa_stmt->execute();
 $mesas = $mesa_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -138,6 +138,10 @@ $conn = null;
     <title>Historial de Reservas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        #bodyGen {
+    background-image: url('../img/FondoMan.jpg');
+    margin: 6vh;
+}
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -250,7 +254,7 @@ $conn = null;
     <div id="historial" class="tab-content <?= $active_tab == 'historial' ? 'active' : '' ?>">
         <form id="filterForm" class="filter-form" method="GET">
             <input type="hidden" name="active_tab" value="historial">
-            <select name="sala" id="sala" onchange="this.form.submit()">
+            <select name="sala" id="sala" onchange="this.form.submit(); filterMesas()">
                 <option value="">Todas las salas</option>
                 <?php foreach ($salas as $sala): ?>
                     <option value="<?= $sala['id_sala'] ?>" <?= $sala['id_sala'] == $sala_filter ? 'selected' : '' ?>><?= $sala['nombre'] ?></option>
@@ -266,7 +270,7 @@ $conn = null;
             <select name="mesa" id="mesa" onchange="this.form.submit()">
                 <option value="">Todas las mesas</option>
                 <?php foreach ($mesas as $mesa): ?>
-                    <option value="<?= $mesa['id_mesa'] ?>" <?= $mesa['id_mesa'] == $mesa_filter ? 'selected' : '' ?>>Mesa <?= $mesa['id_mesa'] ?></option>
+                    <option value="<?= $mesa['id_mesa'] ?>" data-sala="<?= $mesa['id_sala'] ?>" <?= $mesa['id_mesa'] == $mesa_filter ? 'selected' : '' ?>>Mesa <?= $mesa['id_mesa'] ?></option>
                 <?php endforeach; ?>
             </select>
             <input type="date" name="fecha_reserva" value="<?= htmlspecialchars($fecha_reserva_filter) ?>" onchange="this.form.submit()">
@@ -343,6 +347,26 @@ $conn = null;
         document.querySelector('input[name="fecha_reserva"]').value = '';
         document.getElementById("filterForm").submit();
     }
+
+    function filterMesas() {
+        const salaId = document.getElementById('sala').value;
+        const mesaSelect = document.getElementById('mesa');
+        const mesas = mesaSelect.querySelectorAll('option');
+
+        mesas.forEach(mesa => {
+            if (salaId === '' || mesa.getAttribute('data-sala') === salaId) {
+                mesa.style.display = 'block';
+            } else {
+                mesa.style.display = 'none';
+            }
+        });
+
+        // Reset the mesa select to the default option
+        mesaSelect.selectedIndex = 0;
+    }
+
+    // Call filterMesas on page load to apply the filter if a sala is already selected
+    document.addEventListener('DOMContentLoaded', filterMesas);
 </script>
 
 </body>
