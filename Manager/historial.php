@@ -8,128 +8,134 @@ $dbname = "db_restaurante";
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $conn->beginTransaction(); // Iniciar la transacción
-
-    // Obtener las opciones para los filtros
-    $sala_query = "SELECT id_sala, nombre FROM salas";
-    $sala_stmt = $conn->prepare($sala_query);
-    $sala_stmt->execute();
-    $salas = $sala_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $usuario_query = "SELECT id_usuario, nombre_completo, tipo_usuario FROM usuarios";
-    $usuario_stmt = $conn->prepare($usuario_query);
-    $usuario_stmt->execute();
-    $usuarios = $usuario_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $mesa_query = "SELECT id_mesa, id_sala FROM mesas";
-    $mesa_stmt = $conn->prepare($mesa_query);
-    $mesa_stmt->execute();
-    $mesas = $mesa_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // Obtener los valores de los filtros si se envían
-    $sala_filter = isset($_GET['sala']) ? htmlspecialchars($_GET['sala']) : '';
-    $usuario_filter = isset($_GET['usuario']) ? htmlspecialchars($_GET['usuario']) : '';
-    $nombre_reserva_filter = isset($_GET['nombre_reserva']) ? htmlspecialchars($_GET['nombre_reserva']) : '';
-    $mesa_filter = isset($_GET['mesa']) ? htmlspecialchars($_GET['mesa']) : '';
-    $fecha_reserva_filter = isset($_GET['fecha_reserva']) ? htmlspecialchars($_GET['fecha_reserva']) : '';
-    $sala_mesas_reservadas_filter = isset($_GET['sala_mesas_reservadas']) ? htmlspecialchars($_GET['sala_mesas_reservadas']) : '';
-    $active_tab = isset($_GET['active_tab']) ? htmlspecialchars($_GET['active_tab']) : 'historial';
-
-    // Consulta SQL para el historial de reservas
-    $sql_historial = "
-    SELECT 
-        mesas.id_mesa AS id_mesa, 
-        mesas.capacidad, 
-        salas.nombre AS sala_nombre, 
-        reservas.id_reserva, 
-        reservas.hora_reserva, 
-        reservas.hora_fin,
-        reservas.nombre_cliente,
-        usuarios.nombre_completo,
-        COUNT(sillas.id_silla) AS total_sillas
-    FROM mesas
-    LEFT JOIN reservas ON mesas.id_mesa = reservas.id_mesa
-    LEFT JOIN salas ON mesas.id_sala = salas.id_sala
-    LEFT JOIN usuarios ON usuarios.id_usuario = reservas.camarero_id
-    LEFT JOIN sillas ON sillas.id_mesa = mesas.id_mesa
-    WHERE 1=1
-    ";
-
-    // Aplicar los filtros si se han seleccionado
-    if ($sala_filter) {
-        $sql_historial .= " AND mesas.id_sala = :sala";
-    }
-    if ($usuario_filter) {
-        $sql_historial .= " AND usuarios.id_usuario = :usuario";
-    }
-    if ($nombre_reserva_filter) {
-        $sql_historial .= " AND reservas.nombre_cliente LIKE :nombre_reserva";
-    }
-    if ($mesa_filter) {
-        $sql_historial .= " AND mesas.id_mesa = :mesa";
-    }
-    if ($fecha_reserva_filter) {
-        $sql_historial .= " AND DATE(reservas.hora_reserva) = :fecha_reserva";
-    }
-
-    $sql_historial .= " GROUP BY mesas.id_mesa, reservas.id_reserva, salas.id_sala, usuarios.id_usuario
-              ORDER BY reservas.hora_reserva";
-
-    // Ejecutar la consulta con los parámetros de los filtros
-    $stmt_historial = $conn->prepare($sql_historial);
-
-    if ($sala_filter) {
-        $stmt_historial->bindParam(':sala', $sala_filter, PDO::PARAM_INT);
-    }
-    if ($usuario_filter) {
-        $stmt_historial->bindParam(':usuario', $usuario_filter, PDO::PARAM_INT);
-    }
-    if ($nombre_reserva_filter) {
-        $nombre_reserva_filter = "%$nombre_reserva_filter%";
-        $stmt_historial->bindParam(':nombre_reserva', $nombre_reserva_filter, PDO::PARAM_STR);
-    }
-    if ($mesa_filter) {
-        $stmt_historial->bindParam(':mesa', $mesa_filter, PDO::PARAM_INT);
-    }
-    if ($fecha_reserva_filter) {
-        $stmt_historial->bindParam(':fecha_reserva', $fecha_reserva_filter, PDO::PARAM_STR);
-    }
-
-    $stmt_historial->execute();
-    // Obtener los resultados del historial
-    $resultado_historial = $stmt_historial->fetchAll(PDO::FETCH_ASSOC);
-
-    // Consulta SQL para las mesas más reservadas, incluyendo la sala
-    $sql_mesas_reservadas = "
-    SELECT 
-        mesas.id_mesa, 
-        salas.nombre AS sala_nombre,
-        COUNT(reservas.id_reserva) AS total_reservas
-    FROM reservas
-    LEFT JOIN mesas ON reservas.id_mesa = mesas.id_mesa
-    LEFT JOIN salas ON mesas.id_sala = salas.id_sala
-    WHERE 1=1
-    ";
-    if ($sala_mesas_reservadas_filter) {
-        $sql_mesas_reservadas .= " AND mesas.id_sala = :sala_mesas_reservadas";
-    }
-    $sql_mesas_reservadas .= " GROUP BY mesas.id_mesa, salas.id_sala
-    ORDER BY total_reservas DESC
-    LIMIT 10";
-    $stmt_mesas_reservadas = $conn->prepare($sql_mesas_reservadas);
-    if ($sala_mesas_reservadas_filter) {
-        $stmt_mesas_reservadas->bindParam(':sala_mesas_reservadas', $sala_mesas_reservadas_filter, PDO::PARAM_INT);
-    }
-
-    $stmt_mesas_reservadas->execute();
-    // Obtener los resultados de las mesas más reservadas
-    $resultado_mesas_reservadas = $stmt_mesas_reservadas->fetchAll(PDO::FETCH_ASSOC);
-
-    $conn->commit(); // Confirmar la transacción
-} catch (Exception $e) {
-    $conn->rollback(); // Revertir la transacción en caso de error
-    echo "Error al ejecutar la consulta: " . htmlspecialchars($e->getMessage());
+} catch(PDOException $e) {
+    echo "Error de conexión: " . $e->getMessage();
+    die();
 }
+
+// Obtener las opciones para los filtros
+$sala_query = "SELECT id_sala, nombre FROM salas";
+$sala_stmt = $conn->prepare($sala_query);
+$sala_stmt->execute();
+$salas = $sala_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$usuario_query = "SELECT id_usuario, nombre_completo, tipo_usuario FROM usuarios";
+$usuario_stmt = $conn->prepare($usuario_query);
+$usuario_stmt->execute();
+$usuarios = $usuario_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$mesa_query = "SELECT id_mesa, id_sala FROM mesas";
+$mesa_stmt = $conn->prepare($mesa_query);
+$mesa_stmt->execute();
+$mesas = $mesa_stmt->fetchAll(PDO::FETCH_ASSOC);
+// Obtener los valores de los filtros si se envían
+$sala_filter = isset($_GET['sala']) ? htmlspecialchars($_GET['sala']) : '';
+$usuario_filter = isset($_GET['usuario']) ? htmlspecialchars($_GET['usuario']) : '';
+$nombre_reserva_filter = isset($_GET['nombre_reserva']) ? htmlspecialchars($_GET['nombre_reserva']) : '';
+$mesa_filter = isset($_GET['mesa']) ? htmlspecialchars($_GET['mesa']) : '';
+$fecha_reserva_filter = isset($_GET['fecha_reserva']) ? htmlspecialchars($_GET['fecha_reserva']) : '';
+$sala_mesas_reservadas_filter = isset($_GET['sala_mesas_reservadas']) ? htmlspecialchars($_GET['sala_mesas_reservadas']) : '';
+$active_tab = isset($_GET['active_tab']) ? htmlspecialchars($_GET['active_tab']) : 'historial';
+
+// Inicializar las variables para evitar valores null
+$error = isset($error) ? htmlspecialchars($error) : '';
+$success = isset($success) ? htmlspecialchars($success) : '';
+
+// Mostrar errores o éxito
+if (!empty($error)) {
+    echo '<div class="alert alert-danger">' . $error . '</div>';
+} elseif (!empty($success)) {
+    echo '<div class="alert alert-success">' . $success . '</div>';
+}
+
+// Consulta SQL para el historial de reservas
+$sql_historial = "
+SELECT 
+    mesas.id_mesa AS id_mesa, 
+    mesas.capacidad, 
+    salas.nombre AS sala_nombre, 
+    reservas.id_reserva, 
+    reservas.hora_reserva, 
+    reservas.hora_fin,
+    reservas.nombre_cliente,
+    usuarios.nombre_completo,
+    COUNT(sillas.id_silla) AS total_sillas
+FROM mesas
+LEFT JOIN reservas ON mesas.id_mesa = reservas.id_mesa
+LEFT JOIN salas ON mesas.id_sala = salas.id_sala
+LEFT JOIN usuarios ON usuarios.id_usuario = reservas.camarero_id
+LEFT JOIN sillas ON sillas.id_mesa = mesas.id_mesa
+WHERE 1=1
+";
+
+// Aplicar los filtros si se han seleccionado
+if ($sala_filter) {
+    $sql_historial .= " AND mesas.id_sala = :sala";
+}
+if ($usuario_filter) {
+    $sql_historial .= " AND usuarios.id_usuario = :usuario";
+}
+if ($nombre_reserva_filter) {
+    $sql_historial .= " AND reservas.nombre_cliente LIKE :nombre_reserva";
+}
+if ($mesa_filter) {
+    $sql_historial .= " AND mesas.id_mesa = :mesa";
+}
+if ($fecha_reserva_filter) {
+    $sql_historial .= " AND DATE(reservas.hora_reserva) = :fecha_reserva";
+}
+
+$sql_historial .= " GROUP BY mesas.id_mesa, reservas.id_reserva, salas.id_sala, usuarios.id_usuario
+          ORDER BY reservas.hora_reserva";
+
+// Ejecutar la consulta con los parámetros de los filtros
+$stmt_historial = $conn->prepare($sql_historial);
+
+if ($sala_filter) {
+    $stmt_historial->bindParam(':sala', $sala_filter, PDO::PARAM_INT);
+}
+if ($usuario_filter) {
+    $stmt_historial->bindParam(':usuario', $usuario_filter, PDO::PARAM_INT);
+}
+if ($nombre_reserva_filter) {
+    $nombre_reserva_filter = "%$nombre_reserva_filter%";
+    $stmt_historial->bindParam(':nombre_reserva', $nombre_reserva_filter, PDO::PARAM_STR);
+}
+if ($mesa_filter) {
+    $stmt_historial->bindParam(':mesa', $mesa_filter, PDO::PARAM_INT);
+}
+if ($fecha_reserva_filter) {
+    $stmt_historial->bindParam(':fecha_reserva', $fecha_reserva_filter, PDO::PARAM_STR);
+}
+$stmt_historial->execute();
+// Obtener los resultados del historial
+$resultado_historial = $stmt_historial->fetchAll(PDO::FETCH_ASSOC);
+// Consulta SQL para las mesas más reservadas, incluyendo la sala
+$sql_mesas_reservadas = "
+SELECT 
+    mesas.id_mesa, 
+    salas.nombre AS sala_nombre,
+    COUNT(reservas.id_reserva) AS total_reservas
+FROM reservas
+LEFT JOIN mesas ON reservas.id_mesa = mesas.id_mesa
+LEFT JOIN salas ON mesas.id_sala = salas.id_sala
+WHERE 1=1
+";
+if ($sala_mesas_reservadas_filter) {
+    $sql_mesas_reservadas .= " AND mesas.id_sala = :sala_mesas_reservadas";
+}
+$sql_mesas_reservadas .= " GROUP BY mesas.id_mesa, salas.id_sala
+ORDER BY total_reservas DESC
+LIMIT 10";
+$stmt_mesas_reservadas = $conn->prepare($sql_mesas_reservadas);
+if ($sala_mesas_reservadas_filter) {
+    $stmt_mesas_reservadas->bindParam(':sala_mesas_reservadas', $sala_mesas_reservadas_filter, PDO::PARAM_INT);
+}
+
+$stmt_mesas_reservadas->execute();
+
+// Obtener los resultados de las mesas más reservadas
+$resultado_mesas_reservadas = $stmt_mesas_reservadas->fetchAll(PDO::FETCH_ASSOC);
 
 // Cerrar la conexión
 $conn = null;
@@ -262,20 +268,20 @@ $conn = null;
             <select name="sala" id="sala" onchange="this.form.submit(); filterMesas()">
                 <option value="">Todas las salas</option>
                 <?php foreach ($salas as $sala): ?>
-                    <option value="<?= htmlspecialchars($sala['id_sala']) ?>" <?= $sala['id_sala'] == $sala_filter ? 'selected' : '' ?>><?= htmlspecialchars($sala['nombre']) ?></option>
+                    <option value="<?= $sala['id_sala'] ?>" <?= $sala['id_sala'] == $sala_filter ? 'selected' : '' ?>><?= $sala['nombre'] ?></option>
                 <?php endforeach; ?>
             </select>
             <select name="usuario" id="usuario" onchange="this.form.submit()">
                 <option value="">Todos los usuarios</option>
                 <?php foreach ($usuarios as $usuario): ?>
-                    <option value="<?= htmlspecialchars($usuario['id_usuario']) ?>" <?= $usuario['id_usuario'] == $usuario_filter ? 'selected' : '' ?>><?= htmlspecialchars($usuario['nombre_completo']) ?> (<?= htmlspecialchars($usuario['tipo_usuario']) ?>)</option>
+                    <option value="<?= $usuario['id_usuario'] ?>" <?= $usuario['id_usuario'] == $usuario_filter ? 'selected' : '' ?>><?= $usuario['nombre_completo'] ?> (<?= $usuario['tipo_usuario'] ?>)</option>
                 <?php endforeach; ?>
             </select>
             <input type="text" name="nombre_reserva" placeholder="Nombre de la Reserva" value="<?= htmlspecialchars($nombre_reserva_filter) ?>" onchange="this.form.submit()">
             <select name="mesa" id="mesa" onchange="this.form.submit()">
                 <option value="">Todas las mesas</option>
                 <?php foreach ($mesas as $mesa): ?>
-                    <option value="<?= htmlspecialchars($mesa['id_mesa']) ?>" data-sala="<?= htmlspecialchars($mesa['id_sala']) ?>" <?= $mesa['id_mesa'] == $mesa_filter ? 'selected' : '' ?>>Mesa <?= htmlspecialchars($mesa['id_mesa']) ?></option>
+                    <option value="<?= $mesa['id_mesa'] ?>" data-sala="<?= $mesa['id_sala'] ?>" <?= $mesa['id_mesa'] == $mesa_filter ? 'selected' : '' ?>>Mesa <?= $mesa['id_mesa'] ?></option>
                 <?php endforeach; ?>
             </select>
             <input type="date" name="fecha_reserva" value="<?= htmlspecialchars($fecha_reserva_filter) ?>" onchange="this.form.submit()">
@@ -285,15 +291,15 @@ $conn = null;
             <?php if ($resultado_historial): ?>
                 <?php foreach ($resultado_historial as $row): ?>
                     <div class="result-item">
-                        <p><strong>Mesa ID:</strong> <?= htmlspecialchars($row['id_mesa']) ?></p>
-                        <p><strong>Capacidad de mesa:</strong> <?= htmlspecialchars($row['capacidad']) ?></p>
-                        <p><strong>Sala:</strong> <?= htmlspecialchars($row['sala_nombre']) ?></p>
-                        <p><strong>Reserva ID:</strong> <?= htmlspecialchars($row['id_reserva']) ?></p>
-                        <p><strong>Nombre del Cliente:</strong> <?= htmlspecialchars($row['nombre_cliente']) ?></p>
-                        <p><strong>Hora de reserva:</strong> <?= htmlspecialchars($row['hora_reserva']) ?></p>
-                        <p><strong>Hora de fin:</strong> <?= htmlspecialchars($row['hora_fin']) ?></p>
-                        <p><strong>Usuario (Camarero):</strong> <?= htmlspecialchars($row['nombre_completo']) ?></p>
-                        <p><strong>Total de sillas en la mesa:</strong> <?= htmlspecialchars($row['total_sillas']) ?></p>
+                        <p><strong>Mesa ID:</strong> <?= $row['id_mesa'] ?></p>
+                        <p><strong>Capacidad de mesa:</strong> <?= $row['capacidad'] ?></p>
+                        <p><strong>Sala:</strong> <?= $row['sala_nombre'] ?></p>
+                        <p><strong>Reserva ID:</strong> <?= $row['id_reserva'] ?></p>
+                        <p><strong>Nombre del Cliente:</strong> <?= $row['nombre_cliente'] ?></p>
+                        <p><strong>Hora de reserva:</strong> <?= $row['hora_reserva'] ?></p>
+                        <p><strong>Hora de fin:</strong> <?= $row['hora_fin'] ?></p>
+                        <p><strong>Usuario (Camarero):</strong> <?= $row['nombre_completo'] ?></p>
+                        <p><strong>Total de sillas en la mesa:</strong> <?= $row['total_sillas'] ?></p>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -376,3 +382,4 @@ $conn = null;
 
 </body>
 </html>
+
