@@ -5,9 +5,8 @@ if (!isset($_SESSION['nombre'])) {
     exit();
 }
 
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include('../conexion.php'); 
 
-// Verificar si se ha pasado el ID de la mesa a editar
 if (isset($_GET['id'])) {
     $id_mesa = $_GET['id'];
 
@@ -35,7 +34,6 @@ if (isset($_GET['id'])) {
     $total_sillas = $resultado['total_sillas'];
 }
 
-// Procesar el formulario si se ha enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validar si el campo de sillas no está vacío y que no sea negativo
     if (empty($_POST['total_sillas']) || $_POST['total_sillas'] < 0) {

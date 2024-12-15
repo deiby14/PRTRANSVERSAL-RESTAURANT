@@ -1,14 +1,12 @@
 <?php
 session_start();
-include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include_once('../conexion.php'); 
 
-// Verificar que el usuario esté logueado
 if (!isset($_SESSION['nombre'])) {
     header("Location: ../index.php");
     exit();
 }
 
-// Obtener el tipo de usuario para asegurarse de que solo el manager pueda acceder
 $camareroActual = $_SESSION['id_usuario'];
 $stmtComprobar = $con->prepare("SELECT tipo_usuario FROM usuarios WHERE id_usuario = :id_usuario");
 $stmtComprobar->execute(['id_usuario' => $camareroActual]);
@@ -98,7 +96,6 @@ $salas = $stmtSalas->fetchAll();
     <h1>Seleccionar Sala</h1>
     <div class="salas-container">
         <?php
-        // Mostrar las salas dinámicamente
         foreach ($salas as $sala) {
             echo '<div class="sala-item">';
             echo '<img src="' . htmlspecialchars($sala['imagen']) . '" alt="Imagen de la Sala">';

@@ -2,7 +2,6 @@
 document.getElementById("nombre_completo").onblur = function() {
     validaNombre();
 };
-// Función para validar nombre completo
 function validaNombre() {
     var nombre = document.getElementById("nombre_completo").value;
     var errorNombre = document.getElementById("error-nombre");

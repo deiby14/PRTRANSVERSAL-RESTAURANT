@@ -5,7 +5,7 @@ if (!isset($_SESSION['nombre'])) {
     exit();
 }
 
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include('../conexion.php'); 
 
 // Verificar si se pasó el ID de la mesa a editar
 if (isset($_GET['id'])) {
@@ -17,7 +17,7 @@ if (isset($_GET['id'])) {
     $stmt->execute();
     $mesa = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Si no se encuentra la mesa, redirigir
+    // Si no se encuentra la mesa, redirige
     if (!$mesa) {
         $_SESSION['mensaje'] = "Mesa no encontrada.";
         header("Location: index.php");

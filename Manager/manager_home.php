@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include_once('../conexion.php'); 
 
 // Verificar que el usuario esté logueado
 if (!isset($_SESSION['nombre'])) {

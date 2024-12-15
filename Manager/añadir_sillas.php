@@ -5,7 +5,7 @@ if (!isset($_SESSION['nombre'])) {
     exit();
 }
 
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include('../conexion.php'); 
 
 // Inicializar el mensaje de error
 $error = '';
@@ -56,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['mensaje'] = 'Error: ' . $e->getMessage();
                     }
 
-                    // Redirigir de nuevo a esta página para evitar reenvío de formulario
                     header("Location: añadir_sillas.php");
                     exit();
                 }
@@ -78,7 +77,6 @@ try {
     echo "Error al obtener salas: " . $e->getMessage();
 }
 
-// Obtener las mesas disponibles con su capacidad y número de sillas
 $mesas = [];
 try {
     $stmt = $con->query("
@@ -198,7 +196,6 @@ try {
         <button type="submit">Añadir Sillas</button>
     </form>
 
-    <!-- Botón para volver a la página de administrar -->
     <a href="administrar.php" class="btn-volver">Volver</a>
 
     <script>

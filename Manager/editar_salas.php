@@ -5,9 +5,8 @@ if (!isset($_SESSION['nombre'])) {
     exit();
 }
 
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include('../conexion.php'); 
 
-// Verificar si se pasó el ID de la sala a editar
 if (isset($_GET['id'])) {
     $id_sala = $_GET['id'];
     
@@ -17,7 +16,6 @@ if (isset($_GET['id'])) {
     $stmt->execute();
     $sala = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Si no se encuentra la sala, redirigir
     if (!$sala) {
         $_SESSION['mensaje'] = "Sala no encontrada.";
         header("Location: administrar.php");
@@ -43,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($imagen && $imagen['tmp_name']) {
         $targetDir = "../uploads/";
         if (!is_dir($targetDir)) {
-            mkdir($targetDir, 0777, true); // Crear el directorio si no existe
+            mkdir($targetDir, 0777, true); 
         }
 
         $targetFile = $targetDir . basename($imagen["name"]);

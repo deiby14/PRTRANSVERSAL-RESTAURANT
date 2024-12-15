@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include_once('../conexion.php'); 
 
 // Verificar que el usuario esté logueado
 if (!isset($_SESSION['nombre'])) {
@@ -11,9 +11,7 @@ if (!isset($_SESSION['nombre'])) {
 // Obtener el ID de la sala desde la URL
 $id_sala = isset($_GET['id_sala']) ? (int)$_GET['id_sala'] : 0;
 
-// Verificar que el ID de la sala sea válido
 if ($id_sala <= 0) {
-    // Redirigir a una página de inicio o una página predeterminada
     header("Location: camarero_home.php"); // Cambia a la página que desees como predeterminada
     exit();
 }
@@ -136,7 +134,7 @@ $horaActual = date('Y-m-d H:i:s');
             // Determinar el estado de la mesa (ocupada o libre) basado en la hora actual
             $estadoMesa = $reservaOcupada ? 'ocupada' : 'libre';
 
-            // Determinar el color del botón dependiendo del estado de la mesa
+            // Determinar el color del botón dependiendo del estado de la mesa--- opcion escalable
             $botonColor = $estadoMesa == 'ocupada' ? 'red' : 'green';
 
             // Mostrar la mesa y el estado
@@ -146,7 +144,6 @@ $horaActual = date('Y-m-d H:i:s');
             echo '<p class="mesa-capacidad">Sillas: ' . htmlspecialchars($mesa['total_sillas']) . '</p>';
             echo '</div>';
             
-            // Enlace para reservar la mesa
             echo '<a href="reservar.php?id_mesa=' . $mesa['id_mesa'] . '&id_sala=' . $id_sala . '" class="btn-reserva ' . $botonColor . '">Reservar</a>';
 
             echo '</div>';

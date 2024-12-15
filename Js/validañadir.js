@@ -33,7 +33,6 @@ function validaNombre() {
     }
 }
 
-// Función para validar contraseña
 function validaContrasena() {
     var contrasena = document.getElementById("contrasena").value;
     var errorContrasena = document.getElementById("error-contrasena");
@@ -47,7 +46,6 @@ function validaContrasena() {
     }
 }
 
-// Función para validar la confirmación de la contraseña
 function validaConfirmarContrasena() {
     var contrasena = document.getElementById("contrasena").value;
     var confirmarContrasena = document.getElementById("repetir_contrasena").value;
@@ -65,7 +63,6 @@ function validaConfirmarContrasena() {
     }
 }
 
-// Función para validar tipo de usuario
 function validaTipoUsuario() {
     var tipoUsuario = document.getElementById("tipo_usuario").value;
     var errorTipoUsuario = document.getElementById("error-tipo-usuario");

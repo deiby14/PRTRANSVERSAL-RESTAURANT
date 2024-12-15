@@ -135,7 +135,7 @@ $horaActual = date('Y-m-d H:i:s');
             $stmtReserva->execute(['id_mesa' => $mesa['id_mesa'], 'horaActual' => $horaActual]);
             $reservaOcupada = $stmtReserva->fetch();
 
-            // Determinar el estado de la mesa (ocupada o libre) basado en la hora actual
+            // Determinar el estado de la mesa (ocupada o libre) basado en la hora actual---escalable
             $estadoMesa = $reservaOcupada ? 'ocupada' : 'libre';
 
             // Determinar el color del botón dependiendo del estado de la mesa

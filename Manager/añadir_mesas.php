@@ -5,7 +5,7 @@ if (!isset($_SESSION['nombre'])) {
     exit();
 }
 
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include('../conexion.php'); 
 
 $error = null;
 $mensaje = null;

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('../conexion.php'); // Asegúrate de que la conexión esté configurada correctamente
+include('../conexion.php'); 
 
 if (isset($_GET['id_reserva'])) {
     $idReserva = $_GET['id_reserva'];

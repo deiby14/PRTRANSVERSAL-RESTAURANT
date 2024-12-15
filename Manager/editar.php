@@ -1,7 +1,6 @@
 <?php
 include_once("../conexion.php");
 
-// Verificar si se recibió el ID del trabajador
 if (isset($_GET['id_usuario'])) {
     $id_usuario = $_GET['id_usuario'];
 
@@ -20,7 +19,6 @@ if (isset($_GET['id_usuario'])) {
     die("ID de trabajador no proporcionado.");
 }
 
-// Procesar la actualización de datos
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre_completo = trim($_POST['nombre_completo']);
     $tipo_usuario = trim($_POST['tipo_usuario']);
@@ -103,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     font-weight: bold;
     font-size: 12px;
     margin-top: 5px;
-    display: block; /* Asegúrate de que se muestre */
+    display: block; 
 }
 
     </style>

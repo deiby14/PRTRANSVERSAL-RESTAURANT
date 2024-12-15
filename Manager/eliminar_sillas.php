@@ -1,8 +1,7 @@
 <?php
 session_start();
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include('../conexion.php'); 
 
-// Verificar que se recibe el ID de la mesa
 if (!isset($_GET['id'])) {
     $_SESSION['mensaje'] = "ID de mesa no especificado.";
     header("Location: administrar.php");

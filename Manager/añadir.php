@@ -1,5 +1,5 @@
 <?php
-require '../conexion.php'; // Asegúrate de que este archivo conecta con la base de datos correctamente.
+require '../conexion.php'; 
 
 $mensaje = '';
 
@@ -26,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($existe > 0) {
                 $mensaje = 'Ya existe un trabajador con este nombre y rol.';
             } else {
-                // Hashear la contraseña
                 $hash_contrasena = password_hash($contrasena, PASSWORD_BCRYPT);
 
                 // Insertar en la base de datos
@@ -105,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     font-weight: bold;
     font-size: 12px;
     margin-top: 5px;
-    display: block; /* Asegúrate de que se muestre */
+    display: block; 
 }
 
     </style>
@@ -145,7 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <a href="trabajadores.php" class="btn-volver">Volver</a>
 </body>
 <body>
-    <!-- Tu contenido HTML -->
     <script src="../Js/validañadir.js"></script>
 </body>
 

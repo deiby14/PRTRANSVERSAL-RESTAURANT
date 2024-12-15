@@ -7,7 +7,6 @@ totalSillasInput.onblur = function () {
     validaSillas();
 };
 
-// Función para validar el número de sillas
 function validaSillas() {
     const totalSillas = parseInt(totalSillasInput.value);
 

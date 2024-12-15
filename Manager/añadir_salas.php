@@ -5,7 +5,7 @@ if (!isset($_SESSION['nombre'])) {
     exit();
 }
 
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include('../conexion.php'); 
 
 $error = null;
 $mensaje = null;
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Procesar la imagen
             $targetDir = "../uploads/";
             if (!is_dir($targetDir)) {
-                mkdir($targetDir, 0777, true); // Crear el directorio si no existe
+                mkdir($targetDir, 0777, true); // directorio
             }
 
             $targetFile = $targetDir . basename($imagen["name"]);

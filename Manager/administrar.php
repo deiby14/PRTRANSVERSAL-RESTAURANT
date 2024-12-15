@@ -5,14 +5,13 @@ if (!isset($_SESSION['nombre'])) {
     exit();
 }
 
-include('../conexion.php'); // Asegúrate de que la ruta sea correcta
+include('../conexion.php'); 
 
 // Guardar la selección de tabla en la sesión
 if (isset($_POST['tabla'])) {
     $_SESSION['selected_table'] = $_POST['tabla'];
 }
 
-// Si no está presente en la sesión, usar 'salas' como valor predeterminado
 $selected = $_SESSION['selected_table'] ?? 'salas';
 
 // Guardar la selección de sala en la sesión si está seleccionada
@@ -93,7 +92,6 @@ if ($selected === 'mesas' && isset($_POST['sala']) && $_POST['sala'] !== '') {
                              LEFT JOIN salas ON mesas.id_sala = salas.id_sala
                              GROUP BY mesas.id_mesa, salas.nombre ORDER BY salas.nombre")->fetchAll(PDO::FETCH_ASSOC);
     } else {
-        // Si es "salas", simplemente usar la consulta por defecto
         $data = $con->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -1,7 +1,6 @@
 <?php
 session_start();
-include_once('../conexion.php'); // Asegúrate de que la ruta sea correcta
-
+include_once('../conexion.php'); 
 // Verificar que el usuario esté logueado
 if (!isset($_SESSION['nombre'])) {
     header("Location: ../index.php");
@@ -23,7 +22,6 @@ if ($id_mesa <= 0) {
 // Obtener la fecha y hora actuales
 $horaActual = date('Y-m-d H:i:s');
 
-// Procesar el formulario cuando se envía
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nombre_reserva = isset($_POST['nombre_reserva']) ? $_POST['nombre_reserva'] : '';
     $fecha_reserva = isset($_POST['fecha_reserva']) ? $_POST['fecha_reserva'] : date('Y-m-d');
