@@ -18,8 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validación de campos vacíos
     if (empty($capacidad) || empty($id_sala)) {
         $error = "Debes rellenar todos los campos.";
-    } elseif ($capacidad < 6 || $capacidad > 30) {
-        $error = "La capacidad debe estar entre 6 y 30.";
+    } elseif ($capacidad < 1 || $capacidad > 6) {
+        $error = "La capacidad debe estar entre 1 y 6.";
     } else {
         // Verificar el número de mesas en la sala
         $stmt = $con->prepare("SELECT COUNT(*) FROM mesas WHERE id_sala = ?");
