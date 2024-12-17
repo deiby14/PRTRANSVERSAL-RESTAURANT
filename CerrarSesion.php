@@ -2,7 +2,7 @@
 session_start();
 
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=tu_base_de_datos', 'tu_usuario', 'tu_contraseña');
+    $pdo = new PDO('mysql:host=localhost;dbname= db_restaurante', 'db_restaurante', 'Agustin51');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $stmt = $pdo->prepare("UPDATE usuarios SET ultima_sesion = NOW() WHERE id = :id");
